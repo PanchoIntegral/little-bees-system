@@ -131,6 +131,68 @@
         </div>
       </div>
 
+      <!-- Payment Method Statistics -->
+      <div v-if="salesStore.dashboardStats?.payment_methods" class="card">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-medium text-gray-900">💳 Estadísticas por Método de Pago</h3>
+          <div class="text-sm text-gray-500">
+            Este mes
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div
+            v-for="(stats, method) in paymentMethodsData"
+            :key="method"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-medium text-gray-900">{{ stats.display_name }}</h4>
+              <span class="text-xs text-gray-500">{{ stats.percentage }}%</span>
+            </div>
+            <div class="space-y-1">
+              <p class="text-lg font-semibold text-gray-900">
+                ${{ formatCurrency(stats.revenue) }}
+              </p>
+              <p class="text-xs text-gray-500">
+                {{ stats.count }} ventas • Promedio: ${{ formatCurrency(stats.average_amount) }}
+              </p>
+            </div>
+            <!-- Progress bar -->
+            <div class="mt-3 bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                :style="{ width: `${Math.max(stats.percentage, 2)}%` }"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div v-if="salesStore.dashboardStats.payment_methods.summary" class="border-t pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div class="bg-blue-50 rounded-lg p-3">
+              <h4 class="text-sm font-medium text-blue-900">Total de Ventas</h4>
+              <p class="text-xl font-bold text-blue-600">
+                {{ salesStore.dashboardStats.payment_methods.summary.total_sales }}
+              </p>
+            </div>
+            <div class="bg-green-50 rounded-lg p-3">
+              <h4 class="text-sm font-medium text-green-900">Método Más Usado</h4>
+              <p class="text-sm font-semibold text-green-600">
+                {{ getPaymentMethodDisplayName(salesStore.dashboardStats.payment_methods.summary.most_used_method) }}
+              </p>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-3">
+              <h4 class="text-sm font-medium text-purple-900">Mayor Ingresos</h4>
+              <p class="text-sm font-semibold text-purple-600">
+                {{ getPaymentMethodDisplayName(salesStore.dashboardStats.payment_methods.summary.highest_revenue_method) }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Recent Activity & Alerts -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Recent Sales -->
@@ -245,6 +307,15 @@ const inventoryAlerts = computed(() => [
   ...productsStore.outOfStockProducts
 ].slice(0, 5)) // Show only first 5 alerts
 
+const paymentMethodsData = computed(() => {
+  const paymentMethods = salesStore.dashboardStats?.payment_methods
+  if (!paymentMethods) return {}
+
+  // Filter out the summary object and return only payment method data
+  const { summary, ...methods } = paymentMethods
+  return methods
+})
+
 // Methods
 function formatCurrency(amount: number): string {
   return amount.toLocaleString('en-US', {
@@ -261,6 +332,16 @@ function formatDateTime(dateString: string): string {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+function getPaymentMethodDisplayName(method: string): string {
+  const displayNames: Record<string, string> = {
+    'cash': 'Efectivo',
+    'credit_card': 'Tarjeta de Crédito',
+    'debit_card': 'Tarjeta de Débito',
+    'digital_wallet': 'Billetera Digital'
+  }
+  return displayNames[method] || method
 }
 
 async function loadDashboard() {

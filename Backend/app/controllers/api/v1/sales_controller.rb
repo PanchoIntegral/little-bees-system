@@ -147,6 +147,9 @@ class Api::V1::SalesController < Api::BaseController
     today_sales = Sale.where(created_at: today.beginning_of_day..today.end_of_day).where(status: 'completed')
     month_sales = Sale.where(created_at: this_month).where(status: 'completed')
 
+    # Payment method statistics for this month
+    payment_methods_stats = calculate_payment_method_stats(month_sales)
+
     # Get recent sales
     recent_sales = Sale.includes(:user, :customer)
                       .order(created_at: :desc)
@@ -162,6 +165,7 @@ class Api::V1::SalesController < Api::BaseController
         revenue: month_sales.sum(:total_amount).to_f
       },
       average_sale: month_sales.any? ? (month_sales.average(:total_amount).to_f) : 0,
+      payment_methods: payment_methods_stats,
       recent_sales: recent_sales.as_json(
         include: {
           user: { only: [:id, :first_name, :last_name] },
@@ -310,5 +314,54 @@ class Api::V1::SalesController < Api::BaseController
     } if params[:min_amount].present? || params[:max_amount].present?
 
     filters
+  end
+
+  def calculate_payment_method_stats(sales_collection)
+    # Get all payment methods defined in the model
+    payment_methods = %w[cash credit_card debit_card digital_wallet]
+
+    # Calculate stats for each payment method
+    stats = {}
+    total_revenue = sales_collection.sum(:total_amount).to_f
+    total_count = sales_collection.count
+
+    payment_methods.each do |method|
+      method_sales = sales_collection.where(payment_method: method)
+      method_revenue = method_sales.sum(:total_amount).to_f
+      method_count = method_sales.count
+
+      stats[method] = {
+        count: method_count,
+        revenue: method_revenue,
+        percentage: total_revenue > 0 ? ((method_revenue / total_revenue) * 100).round(2) : 0,
+        average_amount: method_count > 0 ? (method_revenue / method_count).round(2) : 0,
+        display_name: format_payment_method_name(method)
+      }
+    end
+
+    # Add summary
+    stats[:summary] = {
+      total_sales: total_count,
+      total_revenue: total_revenue,
+      most_used_method: stats.except(:summary).max_by { |_, data| data[:count] }&.first,
+      highest_revenue_method: stats.except(:summary).max_by { |_, data| data[:revenue] }&.first
+    }
+
+    stats
+  end
+
+  def format_payment_method_name(method)
+    case method
+    when 'cash'
+      'Efectivo'
+    when 'credit_card'
+      'Tarjeta de Crédito'
+    when 'debit_card'
+      'Tarjeta de Débito'
+    when 'digital_wallet'
+      'Billetera Digital'
+    else
+      method.humanize
+    end
   end
 end

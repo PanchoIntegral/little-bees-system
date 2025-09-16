@@ -21705,3 +21705,1696 @@ Processing by Api::AuthController#logout as */*
 Completed 200 OK in 21ms (Views: 0.8ms | ActiveRecord: 5.0ms (3 queries, 0 cached) | GC: 0.0ms)
 
 
+Started POST "/api/auth/login" for 127.0.0.1 at 2025-09-16 14:12:33 -0700
+Processing by Api::AuthController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "auth" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = ? LIMIT ?[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:6:in 'Api::AuthController#login'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+  [1m[36mUser Exists? (4.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "failed_attempts" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:12:34.056568"], ["failed_attempts", 0], ["id", 2]]
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.06ms)
+Completed 200 OK in 286ms (Views: 0.7ms | ActiveRecord: 5.3ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/auth/request_sms_code" for 127.0.0.1 at 2025-09-16 14:12:37 -0700
+Processing by Api::AuthController#request_sms_code as */*
+  Parameters: {"user_id" => 2, "auth" => {"user_id" => 2}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:106:in 'Api::AuthController#request_sms_code'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+  [1m[36mUser Exists? (3.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "sms_verification_code" = ?, "sms_code_expires_at" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:12:38.106872"], ["sms_verification_code", "260027"], ["sms_code_expires_at", "2025-09-16 21:22:38.098348"], ["id", 2]]
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+SMS enviado a +573001234567: 260027
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.07ms)
+Completed 200 OK in 21ms (Views: 1.6ms | ActiveRecord: 3.8ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/debug/sms_code" for 127.0.0.1 at 2025-09-16 14:12:38 -0700
+Processing by Api::DebugController#sms_code as */*
+  Parameters: {"user_id" => 2, "debug" => {"user_id" => 2}}
+Completed 404 Not Found in 0ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+AbstractController::ActionNotFound (The index action could not be found for the :authenticate_request
+callback on Api::DebugController, but it is listed in the controller's
+:except option.
+
+Raising for missing callback actions is a new default in Rails 7.1, if you'd
+like to turn this off you can delete the option from the environment configurations
+or set `config.action_controller.raise_on_missing_callback_actions` to `false`.
+):
+  
+actionpack (7.2.2.2) lib/abstract_controller/callbacks.rb:62:in 'AbstractController::Callbacks::ActionFilter#match?'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:391:in 'block in ActiveSupport::Callbacks::CallTemplate::ObjectCall#inverted_lambda'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:178:in 'block in ActiveSupport::Callbacks::Filters::Before#call'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:178:in 'Array#all?'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:178:in 'ActiveSupport::Callbacks::Filters::Before#call'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:559:in 'block in ActiveSupport::Callbacks::CallbackSequence#invoke_before'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:559:in 'Array#each'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:559:in 'ActiveSupport::Callbacks::CallbackSequence#invoke_before'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:109:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (7.2.2.2) lib/abstract_controller/callbacks.rb:260:in 'AbstractController::Callbacks#process_action'
+actionpack (7.2.2.2) lib/action_controller/metal/rescue.rb:27:in 'ActionController::Rescue#process_action'
+actionpack (7.2.2.2) lib/action_controller/metal/instrumentation.rb:77:in 'block in ActionController::Instrumentation#process_action'
+activesupport (7.2.2.2) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (7.2.2.2) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (7.2.2.2) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionpack (7.2.2.2) lib/action_controller/metal/instrumentation.rb:76:in 'ActionController::Instrumentation#process_action'
+actionpack (7.2.2.2) lib/action_controller/metal/params_wrapper.rb:259:in 'ActionController::ParamsWrapper#process_action'
+activerecord (7.2.2.2) lib/active_record/railties/controller_runtime.rb:39:in 'ActiveRecord::Railties::ControllerRuntime#process_action'
+actionpack (7.2.2.2) lib/abstract_controller/base.rb:163:in 'AbstractController::Base#process'
+actionpack (7.2.2.2) lib/action_controller/metal.rb:252:in 'ActionController::Metal#dispatch'
+actionpack (7.2.2.2) lib/action_controller/metal.rb:335:in 'ActionController::Metal.dispatch'
+actionpack (7.2.2.2) lib/action_dispatch/routing/route_set.rb:67:in 'ActionDispatch::Routing::RouteSet::Dispatcher#dispatch'
+actionpack (7.2.2.2) lib/action_dispatch/routing/route_set.rb:50:in 'ActionDispatch::Routing::RouteSet::Dispatcher#serve'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:53:in 'block in ActionDispatch::Journey::Router#serve'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:133:in 'block in ActionDispatch::Journey::Router#find_routes'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:126:in 'Array#each'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:126:in 'ActionDispatch::Journey::Router#find_routes'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:34:in 'ActionDispatch::Journey::Router#serve'
+actionpack (7.2.2.2) lib/action_dispatch/routing/route_set.rb:896:in 'ActionDispatch::Routing::RouteSet#call'
+warden (1.2.9) lib/warden/manager.rb:36:in 'block in Warden::Manager#call'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Kernel#catch'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Warden::Manager#call'
+rack (3.1.16) lib/rack/etag.rb:29:in 'Rack::ETag#call'
+rack (3.1.16) lib/rack/conditional_get.rb:43:in 'Rack::ConditionalGet#call'
+rack (3.1.16) lib/rack/head.rb:15:in 'Rack::Head#call'
+activerecord (7.2.2.2) lib/active_record/migration.rb:674:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:101:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (7.2.2.2) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (7.2.2.2) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/remote_ip.rb:96:in 'ActionDispatch::RemoteIp#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/request_id.rb:33:in 'ActionDispatch::RequestId#call'
+rack (3.1.16) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+activesupport (7.2.2.2) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in 'ActiveSupport::Cache::Strategy::LocalCache::Middleware#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.1.16) lib/rack/sendfile.rb:114:in 'Rack::Sendfile#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/host_authorization.rb:143:in 'ActionDispatch::HostAuthorization#call'
+rack-cors (3.0.0) lib/rack/cors.rb:102:in 'Rack::Cors#call'
+railties (7.2.2.2) lib/rails/engine.rb:535:in 'Rails::Engine#call'
+puma (7.0.3) lib/puma/configuration.rb:299:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (7.0.3) lib/puma/request.rb:101:in 'block in Puma::Request#handle_request'
+puma (7.0.3) lib/puma/thread_pool.rb:346:in 'Puma::ThreadPool#with_force_shutdown'
+puma (7.0.3) lib/puma/request.rb:100:in 'Puma::Request#handle_request'
+puma (7.0.3) lib/puma/server.rb:497:in 'Puma::Server#process_client'
+puma (7.0.3) lib/puma/server.rb:266:in 'block in Puma::Server#run'
+puma (7.0.3) lib/puma/thread_pool.rb:173:in 'block in Puma::ThreadPool#spawn_thread'
+Started POST "/api/auth/verify_two_factor" for 127.0.0.1 at 2025-09-16 14:12:49 -0700
+Processing by Api::AuthController#verify_two_factor as */*
+  Parameters: {"user_id" => 2, "code" => "805011", "method" => "sms", "auth" => {"user_id" => 2, "code" => "805011", "method" => "sms"}}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:79:in 'Api::AuthController#verify_two_factor'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:52:in 'User#increment_failed_attempts!'
+  [1m[36mUser Exists? (4.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:52:in 'User#increment_failed_attempts!'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "failed_attempts" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:12:49.629130"], ["failed_attempts", 1], ["id", 2]]
+  ↳ app/models/user.rb:52:in 'User#increment_failed_attempts!'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:52:in 'User#increment_failed_attempts!'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.04ms)
+Completed 401 Unauthorized in 18ms (Views: 0.7ms | ActiveRecord: 4.7ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/auth/verify_two_factor" for 127.0.0.1 at 2025-09-16 14:13:01 -0700
+Processing by Api::AuthController#verify_two_factor as */*
+  Parameters: {"user_id" => 2, "code" => "260027", "method" => "sms", "auth" => {"user_id" => 2, "code" => "260027", "method" => "sms"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:79:in 'Api::AuthController#verify_two_factor'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mUser Exists? (5.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mUser Update (0.3ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "sms_verification_code" = ?, "sms_code_expires_at" = ?, "phone_verified_at" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:13:01.888066"], ["sms_verification_code", nil], ["sms_code_expires_at", nil], ["phone_verified_at", "2025-09-16 21:13:01.878423"], ["id", 2]]
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mUser Exists? (3.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "last_sign_in_at" = ?, "current_sign_in_at" = ?, "sign_in_count" = ?, "updated_at" = ? WHERE "users"."id" = ?[0m  [["last_sign_in_at", "2025-09-16 21:11:33.463879"], ["current_sign_in_at", "2025-09-16 21:13:01.895826"], ["sign_in_count", 10], ["updated_at", "2025-09-16 21:13:01.905311"], ["id", 2]]
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+  [1m[36mUser Exists? (4.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "session_token" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:13:01.920312"], ["session_token", "[FILTERED]"], ["id", 2]]
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.08ms)
+Completed 200 OK in 53ms (Views: 1.1ms | ActiveRecord: 15.1ms (7 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:13:01 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.2ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.1ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ?[0m  [["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.11ms)
+Completed 200 OK in 36ms (Views: 0.9ms | ActiveRecord: 1.5ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:13:02 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.09ms)
+Completed 200 OK in 15ms (Views: 0.8ms | ActiveRecord: 0.5ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:13:11 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.43ms)
+Completed 200 OK in 18ms (Views: 1.6ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:13:13 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ?[0m  [["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.1ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.1ms)
+Completed 200 OK in 30ms (Views: 0.8ms | ActiveRecord: 1.2ms (8 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/two_factor" for 127.0.0.1 at 2025-09-16 14:13:20 -0700
+Processing by Api::V1::TwoFactorController#show as */*
+  Parameters: {"two_factor" => {}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.04ms)
+Completed 200 OK in 6ms (Views: 0.7ms | ActiveRecord: 0.2ms (2 queries, 1 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:13:48 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.5ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.1ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ?[0m  [["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.1ms)
+Completed 200 OK in 33ms (Views: 0.9ms | ActiveRecord: 1.8ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:13:48 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.09ms)
+Completed 200 OK in 16ms (Views: 0.8ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:13:50 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.39ms)
+Completed 200 OK in 21ms (Views: 1.8ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:13:52 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ?[0m  [["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.1ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.17ms)
+Completed 200 OK in 34ms (Views: 1.0ms | ActiveRecord: 1.2ms (8 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:14:00 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (18.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ?[0m  [["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.4ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.2ms)
+Completed 200 OK in 96ms (Views: 2.1ms | ActiveRecord: 20.4ms (8 queries, 0 cached) | GC: 0.2ms)
+
+
+Started POST "/api/v1/customers" for 127.0.0.1 at 2025-09-16 14:14:35 -0700
+Processing by Api::V1::CustomersController#create as HTML
+  Parameters: {"customer" => {"first_name" => "Alfonso", "last_name" => "Trejo Robles", "email" => "[FILTERED]", "phone" => "000-000-0000", "address" => ""}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/api/v1/customers_controller.rb:58:in 'Api::V1::CustomersController#create'
+  [1m[36mCustomer Create (8.6ms)[0m  [1m[32mINSERT INTO "customers" ("first_name", "last_name", "email", "phone", "address", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["first_name", "Alfonso"], ["last_name", "Trejo Robles"], ["email", "[FILTERED]"], ["phone", "0000000000"], ["address", ""], ["created_at", "2025-09-16 21:14:35.938699"], ["updated_at", "2025-09-16 21:14:35.938699"]]
+  ↳ app/controllers/api/v1/customers_controller.rb:58:in 'Api::V1::CustomersController#create'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/api/v1/customers_controller.rb:58:in 'Api::V1::CustomersController#create'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.07ms)
+Completed 201 Created in 34ms (Views: 1.1ms | ActiveRecord: 9.0ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/v1/sales" for 127.0.0.1 at 2025-09-16 14:14:36 -0700
+Processing by Api::V1::SalesController#create as HTML
+  Parameters: {"sale" => {"status" => "completed", "payment_method" => "debit_card", "notes" => "Prueba para usuario admin ", "customer_id" => 28, "sale_items_attributes" => [{"product_id" => 17, "quantity" => 3, "unit_price" => "40.53"}]}}
+  [1m[36mUser Load (0.8ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/api/v1/sales_controller.rb:56:in 'Api::V1::SalesController#create'
+  [1m[36mProduct Load (8.4ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ? LIMIT ?[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:56:in 'Api::V1::SalesController#create'
+  [1m[36mSale Create (0.4ms)[0m  [1m[32mINSERT INTO "sales" ("total_amount", "tax_amount", "discount_amount", "status", "payment_method", "notes", "user_id", "customer_id", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["total_amount", 118.19], ["tax_amount", 8.75], ["discount_amount", 12.16], ["status", "completed"], ["payment_method", "debit_card"], ["notes", "Prueba para usuario admin "], ["user_id", 2], ["customer_id", 28], ["created_at", "2025-09-16 21:14:36.623201"], ["updated_at", "2025-09-16 21:14:36.623201"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:56:in 'Api::V1::SalesController#create'
+  [1m[36mSaleItem Create (2.1ms)[0m  [1m[32mINSERT INTO "sale_items" ("quantity", "unit_price", "line_total", "sale_id", "product_id", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["quantity", 3], ["unit_price", 40.53], ["line_total", 121.59], ["sale_id", 18], ["product_id", 17], ["created_at", "2025-09-16 21:14:36.629532"], ["updated_at", "2025-09-16 21:14:36.629532"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:56:in 'Api::V1::SalesController#create'
+  [1m[36mProduct Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE LOWER("products"."sku") = LOWER(?) AND "products"."id" != ? LIMIT ?[0m  [["sku", "TEST0010"], ["id", 17], ["LIMIT", 1]]
+  ↳ app/models/product.rb:82:in 'Product#decrease_stock!'
+  [1m[36mProduct Update (0.1ms)[0m  [1m[33mUPDATE "products" SET "stock_quantity" = ?, "updated_at" = ? WHERE "products"."id" = ?[0m  [["stock_quantity", 14], ["updated_at", "2025-09-16 21:14:36.644710"], ["id", 17]]
+  ↳ app/models/product.rb:82:in 'Product#decrease_stock!'
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/api/v1/sales_controller.rb:56:in 'Api::V1::SalesController#create'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ? LIMIT ?[0m  [["id", 28], ["LIMIT", 1]]
+  ↳ app/models/sale.rb:176:in 'Sale#customer_name'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.14ms)
+Completed 201 Created in 88ms (Views: 1.2ms | ActiveRecord: 12.6ms (8 queries, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:14:36 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.3ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.38ms)
+Completed 200 OK in 37ms (Views: 1.1ms | ActiveRecord: 1.4ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:15:18 -0700
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:15:19 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.2ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.16ms)
+Completed 200 OK in 51ms (Views: 1.3ms | ActiveRecord: 2.4ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.19ms)
+Completed 200 OK in 25ms (Views: 1.4ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:15:24 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.23ms)
+Completed 200 OK in 28ms (Views: 3.5ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started PATCH "/api/v1/products/17" for 127.0.0.1 at 2025-09-16 14:15:41 -0700
+Processing by Api::V1::ProductsController#update as */*
+  Parameters: {"product" => {"name" => "Prueba producto vela ", "description" => "vela prueba", "price" => "40.53", "sku" => "TEST0010", "category" => "Hogar", "stock_quantity" => "14", "low_stock_threshold" => "5", "active" => "true"}, "id" => "17"}
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ? LIMIT ?[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/products_controller.rb:94:in 'Api::V1::ProductsController#set_product'
+Updating product 17 with params: #<ActionController::Parameters {"name" => "Prueba producto vela ", "description" => "vela prueba", "price" => "40.53", "sku" => "TEST0010", "category" => "Hogar", "stock_quantity" => "14", "low_stock_threshold" => "5", "active" => "true"} permitted: true>
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/api/v1/products_controller.rb:68:in 'Api::V1::ProductsController#update'
+  [1m[36mProduct Exists? (7.0ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE LOWER("products"."sku") = LOWER(?) AND "products"."id" != ? LIMIT ?[0m  [["sku", "TEST0010"], ["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/products_controller.rb:68:in 'Api::V1::ProductsController#update'
+  [1m[36mProduct Update (0.2ms)[0m  [1m[33mUPDATE "products" SET "category" = ?, "updated_at" = ? WHERE "products"."id" = ?[0m  [["category", "Hogar"], ["updated_at", "2025-09-16 21:15:41.733354"], ["id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:68:in 'Api::V1::ProductsController#update'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/api/v1/products_controller.rb:68:in 'Api::V1::ProductsController#update'
+Product updated successfully: 17
+  [1m[36mActiveStorage::Attachment Load (0.3ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = ? AND "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? LIMIT ?[0m  [["record_id", 17], ["record_type", "Product"], ["name", "image"], ["LIMIT", 1]]
+  ↳ app/models/product.rb:95:in 'Product#image_url'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.06ms)
+Completed 200 OK in 45ms (Views: 0.8ms | ActiveRecord: 8.6ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:15:42 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.97ms)
+Completed 200 OK in 26ms (Views: 3.5ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:15:56 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.11ms)
+Completed 200 OK in 33ms (Views: 1.4ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:15:59 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (1.1ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.15ms)
+Completed 200 OK in 54ms (Views: 1.5ms | ActiveRecord: 2.3ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:16:01 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.1ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.16ms)
+Completed 200 OK in 47ms (Views: 0.9ms | ActiveRecord: 2.2ms (10 queries, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:16:01 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.08ms)
+Completed 200 OK in 18ms (Views: 0.8ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:17:08 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.09ms)
+Completed 200 OK in 15ms (Views: 0.9ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:17:09 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.5ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.19ms)
+Completed 200 OK in 39ms (Views: 1.3ms | ActiveRecord: 1.8ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/two_factor" for 127.0.0.1 at 2025-09-16 14:17:13 -0700
+Processing by Api::V1::TwoFactorController#show as */*
+  Parameters: {"two_factor" => {}}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.04ms)
+Completed 200 OK in 6ms (Views: 0.7ms | ActiveRecord: 0.1ms (2 queries, 1 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:17:27 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.4ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.25ms)
+Completed 200 OK in 42ms (Views: 1.1ms | ActiveRecord: 1.7ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/auth/logout" for 127.0.0.1 at 2025-09-16 14:17:39 -0700
+Processing by Api::AuthController#logout as */*
+  Parameters: {"auth" => {}}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:216:in 'User#invalidate_session!'
+  [1m[36mUser Exists? (3.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:216:in 'User#invalidate_session!'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "session_token" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:17:39.343240"], ["session_token", "[FILTERED]"], ["id", 2]]
+  ↳ app/models/user.rb:216:in 'User#invalidate_session!'
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:216:in 'User#invalidate_session!'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.04ms)
+Completed 200 OK in 19ms (Views: 0.7ms | ActiveRecord: 4.4ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/auth/login" for 127.0.0.1 at 2025-09-16 14:17:53 -0700
+Processing by Api::AuthController#login as */*
+  Parameters: {"email" => "[FILTERED]", "password" => "[FILTERED]", "auth" => {"email" => "[FILTERED]", "password" => "[FILTERED]"}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = ? LIMIT ?[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:6:in 'Api::AuthController#login'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+  [1m[36mUser Exists? (3.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "failed_attempts" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:17:54.575287"], ["failed_attempts", 0], ["id", 2]]
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:56:in 'User#reset_failed_attempts!'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.07ms)
+Completed 200 OK in 288ms (Views: 1.3ms | ActiveRecord: 4.4ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/auth/request_sms_code" for 127.0.0.1 at 2025-09-16 14:18:04 -0700
+Processing by Api::AuthController#request_sms_code as */*
+  Parameters: {"user_id" => 2, "auth" => {"user_id" => 2}}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:106:in 'Api::AuthController#request_sms_code'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+  [1m[36mUser Exists? (3.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "sms_verification_code" = ?, "sms_code_expires_at" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:18:04.598851"], ["sms_verification_code", "424508"], ["sms_code_expires_at", "2025-09-16 21:28:04.591956"], ["id", 2]]
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:224:in 'User#generate_sms_verification_code!'
+SMS enviado a +573001234567: 424508
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.06ms)
+Completed 200 OK in 19ms (Views: 0.8ms | ActiveRecord: 3.7ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/api/debug/sms_code" for 127.0.0.1 at 2025-09-16 14:18:04 -0700
+Processing by Api::DebugController#sms_code as */*
+  Parameters: {"user_id" => 2, "debug" => {"user_id" => 2}}
+Completed 404 Not Found in 0ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+AbstractController::ActionNotFound (The index action could not be found for the :authenticate_request
+callback on Api::DebugController, but it is listed in the controller's
+:except option.
+
+Raising for missing callback actions is a new default in Rails 7.1, if you'd
+like to turn this off you can delete the option from the environment configurations
+or set `config.action_controller.raise_on_missing_callback_actions` to `false`.
+):
+  
+actionpack (7.2.2.2) lib/abstract_controller/callbacks.rb:62:in 'AbstractController::Callbacks::ActionFilter#match?'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:391:in 'block in ActiveSupport::Callbacks::CallTemplate::ObjectCall#inverted_lambda'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:178:in 'block in ActiveSupport::Callbacks::Filters::Before#call'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:178:in 'Array#all?'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:178:in 'ActiveSupport::Callbacks::Filters::Before#call'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:559:in 'block in ActiveSupport::Callbacks::CallbackSequence#invoke_before'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:559:in 'Array#each'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:559:in 'ActiveSupport::Callbacks::CallbackSequence#invoke_before'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:109:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (7.2.2.2) lib/abstract_controller/callbacks.rb:260:in 'AbstractController::Callbacks#process_action'
+actionpack (7.2.2.2) lib/action_controller/metal/rescue.rb:27:in 'ActionController::Rescue#process_action'
+actionpack (7.2.2.2) lib/action_controller/metal/instrumentation.rb:77:in 'block in ActionController::Instrumentation#process_action'
+activesupport (7.2.2.2) lib/active_support/notifications.rb:210:in 'block in ActiveSupport::Notifications.instrument'
+activesupport (7.2.2.2) lib/active_support/notifications/instrumenter.rb:58:in 'ActiveSupport::Notifications::Instrumenter#instrument'
+activesupport (7.2.2.2) lib/active_support/notifications.rb:210:in 'ActiveSupport::Notifications.instrument'
+actionpack (7.2.2.2) lib/action_controller/metal/instrumentation.rb:76:in 'ActionController::Instrumentation#process_action'
+actionpack (7.2.2.2) lib/action_controller/metal/params_wrapper.rb:259:in 'ActionController::ParamsWrapper#process_action'
+activerecord (7.2.2.2) lib/active_record/railties/controller_runtime.rb:39:in 'ActiveRecord::Railties::ControllerRuntime#process_action'
+actionpack (7.2.2.2) lib/abstract_controller/base.rb:163:in 'AbstractController::Base#process'
+actionpack (7.2.2.2) lib/action_controller/metal.rb:252:in 'ActionController::Metal#dispatch'
+actionpack (7.2.2.2) lib/action_controller/metal.rb:335:in 'ActionController::Metal.dispatch'
+actionpack (7.2.2.2) lib/action_dispatch/routing/route_set.rb:67:in 'ActionDispatch::Routing::RouteSet::Dispatcher#dispatch'
+actionpack (7.2.2.2) lib/action_dispatch/routing/route_set.rb:50:in 'ActionDispatch::Routing::RouteSet::Dispatcher#serve'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:53:in 'block in ActionDispatch::Journey::Router#serve'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:133:in 'block in ActionDispatch::Journey::Router#find_routes'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:126:in 'Array#each'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:126:in 'ActionDispatch::Journey::Router#find_routes'
+actionpack (7.2.2.2) lib/action_dispatch/journey/router.rb:34:in 'ActionDispatch::Journey::Router#serve'
+actionpack (7.2.2.2) lib/action_dispatch/routing/route_set.rb:896:in 'ActionDispatch::Routing::RouteSet#call'
+warden (1.2.9) lib/warden/manager.rb:36:in 'block in Warden::Manager#call'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Kernel#catch'
+warden (1.2.9) lib/warden/manager.rb:34:in 'Warden::Manager#call'
+rack (3.1.16) lib/rack/etag.rb:29:in 'Rack::ETag#call'
+rack (3.1.16) lib/rack/conditional_get.rb:43:in 'Rack::ConditionalGet#call'
+rack (3.1.16) lib/rack/head.rb:15:in 'Rack::Head#call'
+activerecord (7.2.2.2) lib/active_record/migration.rb:674:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (7.2.2.2) lib/active_support/callbacks.rb:101:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (7.2.2.2) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (7.2.2.2) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/remote_ip.rb:96:in 'ActionDispatch::RemoteIp#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/request_id.rb:33:in 'ActionDispatch::RequestId#call'
+rack (3.1.16) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+activesupport (7.2.2.2) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in 'ActiveSupport::Cache::Strategy::LocalCache::Middleware#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/executor.rb:16:in 'ActionDispatch::Executor#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.1.16) lib/rack/sendfile.rb:114:in 'Rack::Sendfile#call'
+actionpack (7.2.2.2) lib/action_dispatch/middleware/host_authorization.rb:143:in 'ActionDispatch::HostAuthorization#call'
+rack-cors (3.0.0) lib/rack/cors.rb:102:in 'Rack::Cors#call'
+railties (7.2.2.2) lib/rails/engine.rb:535:in 'Rails::Engine#call'
+puma (7.0.3) lib/puma/configuration.rb:299:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (7.0.3) lib/puma/request.rb:101:in 'block in Puma::Request#handle_request'
+puma (7.0.3) lib/puma/thread_pool.rb:346:in 'Puma::ThreadPool#with_force_shutdown'
+puma (7.0.3) lib/puma/request.rb:100:in 'Puma::Request#handle_request'
+puma (7.0.3) lib/puma/server.rb:497:in 'Puma::Server#process_client'
+puma (7.0.3) lib/puma/server.rb:266:in 'block in Puma::Server#run'
+puma (7.0.3) lib/puma/thread_pool.rb:173:in 'block in Puma::ThreadPool#spawn_thread'
+Started POST "/api/auth/verify_two_factor" for 127.0.0.1 at 2025-09-16 14:18:15 -0700
+Processing by Api::AuthController#verify_two_factor as */*
+  Parameters: {"user_id" => 2, "code" => "424508", "method" => "sms", "auth" => {"user_id" => 2, "code" => "424508", "method" => "sms"}}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:79:in 'Api::AuthController#verify_two_factor'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mUser Exists? (4.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "sms_verification_code" = ?, "sms_code_expires_at" = ?, "phone_verified_at" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:18:15.514933"], ["sms_verification_code", nil], ["sms_code_expires_at", nil], ["phone_verified_at", "2025-09-16 21:18:15.504884"], ["id", 2]]
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:237:in 'User#verify_sms_code'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mUser Exists? (4.8ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "last_sign_in_at" = ?, "current_sign_in_at" = ?, "sign_in_count" = ?, "updated_at" = ? WHERE "users"."id" = ?[0m  [["last_sign_in_at", "2025-09-16 21:13:01.895826"], ["current_sign_in_at", "2025-09-16 21:18:15.521434"], ["sign_in_count", 11], ["updated_at", "2025-09-16 21:18:15.531913"], ["id", 2]]
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/api/auth_controller.rb:190:in 'Api::AuthController#complete_login'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+  [1m[36mUser Exists? (6.3ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE LOWER("users"."email") = LOWER(?) AND "users"."id" != ? LIMIT ?[0m  [["email", "[FILTERED]"], ["id", 2], ["LIMIT", 1]]
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+  [1m[36mUser Update (0.2ms)[0m  [1m[33mUPDATE "users" SET "updated_at" = ?, "session_token" = ? WHERE "users"."id" = ?[0m  [["updated_at", "2025-09-16 21:18:15.552046"], ["session_token", "[FILTERED]"], ["id", 2]]
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/models/user.rb:211:in 'User#regenerate_session_token!'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.06ms)
+Completed 200 OK in 61ms (Views: 1.0ms | ActiveRecord: 17.3ms (7 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:18:15 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.3ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.4ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.13ms)
+Completed 200 OK in 33ms (Views: 0.9ms | ActiveRecord: 2.1ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:18:15 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.13ms)
+Completed 200 OK in 13ms (Views: 1.0ms | ActiveRecord: 0.5ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:18:19 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.11ms)
+Completed 200 OK in 14ms (Views: 0.8ms | ActiveRecord: 0.5ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:18:21 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.2ms)
+Completed 200 OK in 34ms (Views: 1.0ms | ActiveRecord: 1.4ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:18:31 -0700
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:18:31 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.1ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.13ms)
+Completed 200 OK in 48ms (Views: 1.2ms | ActiveRecord: 2.0ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.13ms)
+Completed 200 OK in 16ms (Views: 1.0ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:18:32 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.17ms)
+Completed 200 OK in 20ms (Views: 1.4ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:18:40 -0700
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:18:40 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.11ms)
+Completed 200 OK in 18ms (Views: 0.9ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.2ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.1ms)
+Completed 200 OK in 40ms (Views: 0.8ms | ActiveRecord: 1.8ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:19:45 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.13ms)
+Completed 200 OK in 20ms (Views: 1.2ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:19:46 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.7ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.3ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.51ms)
+Completed 200 OK in 56ms (Views: 1.6ms | ActiveRecord: 1.9ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1&payment_method=credit_card" for 127.0.0.1 at 2025-09-16 14:19:54 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1", "payment_method" => "credit_card"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."payment_method" = ?[0m  [["payment_method", "credit_card"]]
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.3ms)[0m  [1m[34mSELECT "sales".* FROM "sales" WHERE "sales"."payment_method" = ? ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["payment_method", "credit_card"], ["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.15ms)
+Completed 200 OK in 11ms (Views: 1.0ms | ActiveRecord: 0.7ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1&payment_method=debit_card" for 127.0.0.1 at 2025-09-16 14:19:56 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1", "payment_method" => "debit_card"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."payment_method" = ?[0m  [["payment_method", "debit_card"]]
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" WHERE "sales"."payment_method" = ? ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["payment_method", "debit_card"], ["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ?[0m  [["id", 28]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.4ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.14ms)
+Completed 200 OK in 41ms (Views: 1.1ms | ActiveRecord: 1.8ms (8 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1&payment_method=digital_wallet" for 127.0.0.1 at 2025-09-16 14:20:00 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1", "payment_method" => "digital_wallet"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."payment_method" = ?[0m  [["payment_method", "digital_wallet"]]
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" WHERE "sales"."payment_method" = ? ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["payment_method", "digital_wallet"], ["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.11ms)
+Completed 200 OK in 11ms (Views: 1.1ms | ActiveRecord: 0.5ms (3 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1&payment_method=cash" for 127.0.0.1 at 2025-09-16 14:20:02 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1", "payment_method" => "cash"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."payment_method" = ?[0m  [["payment_method", "cash"]]
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" WHERE "sales"."payment_method" = ? ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["payment_method", "cash"], ["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.4ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" = ?[0m  [["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.4ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.15ms)
+Completed 200 OK in 40ms (Views: 1.1ms | ActiveRecord: 1.7ms (8 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:21:30 -0700
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:21:30 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.2ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.17ms)
+Completed 200 OK in 81ms (Views: 1.5ms | ActiveRecord: 2.4ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.14ms)
+Completed 200 OK in 20ms (Views: 1.1ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:21:33 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.11ms)
+Completed 200 OK in 19ms (Views: 1.4ms | ActiveRecord: 0.5ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:21:35 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.4ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.6ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.15ms)
+Completed 200 OK in 41ms (Views: 1.0ms | ActiveRecord: 2.1ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:21:38 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.3ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.36ms)
+Completed 200 OK in 47ms (Views: 1.7ms | ActiveRecord: 2.0ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:21:38 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.18ms)
+Completed 200 OK in 19ms (Views: 1.1ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:21:39 -0700
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:21:39 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.14ms)
+Completed 200 OK in 23ms (Views: 1.5ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:157:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:158:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.6ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:162:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.1ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.15ms)
+Completed 200 OK in 47ms (Views: 1.2ms | ActiveRecord: 2.5ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:22:29 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.12ms)
+Completed 200 OK in 15ms (Views: 0.9ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:22:38 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.1ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.2ms)
+Completed 200 OK in 34ms (Views: 0.9ms | ActiveRecord: 1.4ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:23:24 -0700
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:23:24 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (1.0ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.1ms)
+Completed 200 OK in 77ms (Views: 1.2ms | ActiveRecord: 6.3ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:325:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:326:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:160:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Sum (0.0ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.2ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.1ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.22ms)
+Completed 200 OK in 95ms (Views: 1.0ms | ActiveRecord: 5.1ms (20 queries, 2 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:23:39 -0700
+Processing by Api::V1::SalesController#stats as */*
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:325:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:326:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:160:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Sum (0.0ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.1ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.19ms)
+Completed 200 OK in 51ms (Views: 1.0ms | ActiveRecord: 2.6ms (19 queries, 2 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:24:52 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.14ms)
+Completed 200 OK in 17ms (Views: 1.2ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:24:54 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.3ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.3ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.3ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.22ms)
+Completed 200 OK in 225ms (Views: 1.3ms | ActiveRecord: 2.5ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:26:44 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.1ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.15ms)
+Completed 200 OK in 35ms (Views: 0.8ms | ActiveRecord: 1.7ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:26:46 -0700
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:26:46 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:325:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:326:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.2ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:160:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Sum (0.0ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.2ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.3ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.2ms)
+Completed 200 OK in 60ms (Views: 0.8ms | ActiveRecord: 3.1ms (20 queries, 2 cached) | GC: 0.0ms)
+
+
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.2ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.09ms)
+Completed 200 OK in 15ms (Views: 0.7ms | ActiveRecord: 0.6ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?page=1" for 127.0.0.1 at 2025-09-16 14:27:07 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.2ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.13ms)
+Completed 200 OK in 14ms (Views: 1.0ms | ActiveRecord: 0.7ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales?page=1" for 127.0.0.1 at 2025-09-16 14:27:10 -0700
+Processing by Api::V1::SalesController#index as HTML
+  Parameters: {"page" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mSale Load (0.2ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ? OFFSET ?[0m  [["LIMIT", 20], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Load (0.2ms)[0m  [1m[34mSELECT "sale_items".* FROM "sale_items" WHERE "sale_items"."sale_id" IN (?, ?)[0m  [["sale_id", 18], ["sale_id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = ?[0m  [["id", 17]]
+  ↳ app/controllers/api/v1/sales_controller.rb:20:in 'Api::V1::SalesController#index'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 18]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+  [1m[36mSaleItem Sum (0.2ms)[0m  [1m[34mSELECT SUM("sale_items"."quantity") FROM "sale_items" WHERE "sale_items"."sale_id" = ?[0m  [["sale_id", 17]]
+  ↳ app/models/sale.rb:75:in 'Sale#items_count'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.2ms)
+Completed 200 OK in 31ms (Views: 0.9ms | ActiveRecord: 1.5ms (9 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/sales/stats" for 127.0.0.1 at 2025-09-16 14:27:18 -0700
+Processing by Api::V1::SalesController#stats as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/api/base_controller.rb:18:in 'Api::BaseController#authenticate_request_optional'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:325:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:326:in 'Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.9ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "cash"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "credit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "debit_card"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:330:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? AND "sales"."payment_method" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["payment_method", "digital_wallet"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:331:in 'block in Api::V1::SalesController#calculate_payment_method_stats'
+  [1m[36mSale Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:160:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Sum (0.1ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-16 00:00:00"], ["created_at", "2025-09-16 23:59:59.999999"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:161:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:164:in 'Api::V1::SalesController#stats'
+  [1m[36mCACHE Sale Sum (0.0ms)[0m  [1m[34mSELECT SUM("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:165:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ? LIMIT ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"], ["LIMIT", 1]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Average (0.1ms)[0m  [1m[34mSELECT AVG("sales"."total_amount") FROM "sales" WHERE "sales"."created_at" BETWEEN ? AND ? AND "sales"."status" = ?[0m  [["created_at", "2025-09-01"], ["created_at", "2025-09-30"], ["status", "completed"]]
+  ↳ app/controllers/api/v1/sales_controller.rb:167:in 'Api::V1::SalesController#stats'
+  [1m[36mSale Load (0.1ms)[0m  [1m[34mSELECT "sales".* FROM "sales" ORDER BY "sales"."created_at" DESC LIMIT ?[0m  [["LIMIT", 5]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = ?[0m  [["id", 2]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+  [1m[36mCustomer Load (0.2ms)[0m  [1m[34mSELECT "customers".* FROM "customers" WHERE "customers"."id" IN (?, ?)[0m  [["id", 28], ["id", 27]]
+  ↳ app/controllers/api/v1/sales_controller.rb:169:in 'Api::V1::SalesController#stats'
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.13ms)
+Completed 200 OK in 50ms (Views: 0.7ms | ActiveRecord: 3.0ms (20 queries, 2 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/products?per_page=100" for 127.0.0.1 at 2025-09-16 14:27:18 -0700
+Processing by Api::V1::ProductsController#index as HTML
+  Parameters: {"per_page" => "100"}
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  ↳ app/controllers/concerns/paginatable.rb:18:in 'Paginatable#paginate_collection'
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" ORDER BY "products"."name" ASC LIMIT ? OFFSET ?[0m  [["LIMIT", 100], ["OFFSET", 0]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Attachment Load (0.1ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_type" = ? AND "active_storage_attachments"."name" = ? AND "active_storage_attachments"."record_id" = ?[0m  [["record_type", "Product"], ["name", "image"], ["record_id", 17]]
+  ↳ app/controllers/api/v1/products_controller.rb:21:in 'Api::V1::ProductsController#index'
+  [1m[36mActiveStorage::Blob Load (0.1ms)[0m  [1m[34mSELECT "active_storage_blobs".* FROM "active_storage_blobs" WHERE "active_storage_blobs"."id" = ? LIMIT ?[0m  [["id", 20], ["LIMIT", 1]]
+  ↳ app/models/product.rb:99:in 'Product#image_url'
+Generated image URL for product 17: http://localhost:3000/api/v1/images/eyJfcmFpbHMiOnsiZGF0YSI6MjAsInB1ciI6ImJsb2JfaWQifX0=--125ec5fad3d436de43f355a6946dcc1fd698ed80
+[active_model_serializers] Rendered ActiveModel::Serializer::Null with Hash (0.1ms)
+Completed 200 OK in 14ms (Views: 2.2ms | ActiveRecord: 0.5ms (4 queries, 0 cached) | GC: 0.0ms)
+
+
