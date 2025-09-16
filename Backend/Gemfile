@@ -23,6 +23,7 @@ gem "jwt"
 gem "devise"
 gem "rotp"
 gem "rqrcode"
+# gem "twilio-ruby" # Para producción con SMS real
 
 # Redis for caching and background jobs
 gem "redis", ">= 4.0.1"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_16_170000) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_16_203331) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -124,8 +124,32 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_16_170000) do
     t.integer "sign_in_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", default: true, null: false
+    t.integer "failed_attempts", default: 0, null: false
+    t.datetime "locked_at"
+    t.string "unlock_token"
+    t.text "two_factor_backup_codes"
+    t.datetime "password_changed_at"
+    t.boolean "must_change_password", default: false, null: false
+    t.string "session_token"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.string "phone_number"
+    t.boolean "sms_verification_enabled", default: false
+    t.string "sms_verification_code"
+    t.datetime "sms_code_expires_at"
+    t.datetime "phone_verified_at"
+    t.index ["active"], name: "index_users_on_active"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["failed_attempts"], name: "index_users_on_failed_attempts"
+    t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token"
     t.index ["role"], name: "index_users_on_role"
+    t.index ["session_token"], name: "index_users_on_session_token"
+    t.index ["unlock_token"], name: "index_users_on_unlock_token"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

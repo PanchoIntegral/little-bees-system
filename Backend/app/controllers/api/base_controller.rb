@@ -37,6 +37,8 @@ class Api::BaseController < ActionController::API
     end
   end
 
+  alias_method :authenticate_request, :authenticate_request!
+
   def current_user
     @current_user
   end

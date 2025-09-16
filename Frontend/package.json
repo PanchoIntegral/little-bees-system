@@ -11,9 +11,10 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
+    "@types/qrcode": "^1.5.5",
     "axios": "^1.12.2",
-    "qrcode": "^1.5.3",
     "pinia": "^2.1.7",
+    "qrcode": "^1.5.4",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },
