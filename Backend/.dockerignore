@@ -1,0 +1,9 @@
+.git
+.dockerignore
+Dockerfile*
+.gitignore
+README.md
+log/*
+tmp/*
+.bundle
+vendor/bundle

@@ -1,0 +1,149 @@
+import { apiService } from './api'
+import { Product } from './products'
+import { Customer } from './customers'
+
+export interface User {
+  id: number
+  email: string
+  first_name: string
+  last_name: string
+  role: string
+  full_name: string
+}
+
+export interface SaleItem {
+  id: number
+  quantity: number
+  unit_price: number
+  line_total: number
+  product: Product
+  created_at: string
+  updated_at: string
+}
+
+export interface Sale {
+  id: number
+  total_amount: number
+  tax_amount: number
+  discount_amount: number
+  status: 'pending' | 'completed' | 'cancelled' | 'refunded'
+  payment_method: 'cash' | 'credit_card' | 'debit_card' | 'digital_wallet'
+  notes?: string
+  created_at: string
+  updated_at: string
+  receipt_number: string
+  subtotal: number
+  items_count: number
+  formatted_total: string
+  payment_method_display: string
+  status_display: string
+  customer_name: string
+  user: User
+  customer?: Customer
+  sale_items: SaleItem[]
+}
+
+export interface SaleFilters {
+  query?: string
+  status?: string
+  payment_method?: string
+  user_id?: number
+  start_date?: string
+  end_date?: string
+  sort_by?: 'created_at' | 'total_amount' | 'status'
+  page?: number
+  per_page?: number
+}
+
+export interface SaleResponse {
+  sales: Sale[]
+  pagination: {
+    current_page: number
+    total_pages: number
+    total_count: number
+    per_page: number
+  }
+}
+
+export interface CreateSaleData {
+  status?: string
+  payment_method: string
+  notes?: string
+  customer_id?: number
+  sale_items_attributes?: {
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+  }[];
+}
+
+export interface SaleItemData {
+  product_id: number
+  quantity: number
+  unit_price?: number
+}
+
+export interface DashboardStats {
+  today: {
+    sales_count: number
+    revenue: number
+  }
+  this_month: {
+    sales_count: number
+    revenue: number
+  }
+  average_sale: number
+  recent_sales: Sale[]
+}
+
+class SalesService {
+  async getSales(filters: SaleFilters = {}): Promise<SaleResponse> {
+    return apiService.get<SaleResponse>('/v1/sales', filters)
+  }
+
+  async getSale(id: number): Promise<Sale> {
+    return apiService.get<Sale>(`/v1/sales/${id}`)
+  }
+
+  async createSale(data: CreateSaleData): Promise<Sale> {
+    return apiService.post<Sale>('/v1/sales', { sale: data })
+  }
+
+  async updateSale(id: number, data: Partial<CreateSaleData>): Promise<Sale> {
+    return apiService.put<Sale>(`/v1/sales/${id}`, { sale: data })
+  }
+
+  async deleteSale(id: number): Promise<{ message: string }> {
+    return apiService.delete<{ message: string }>(`/v1/sales/${id}`)
+  }
+
+  async completeSale(id: number): Promise<Sale> {
+    return apiService.patch<Sale>(`/v1/sales/${id}/complete`)
+  }
+
+  async cancelSale(id: number): Promise<Sale> {
+    return apiService.patch<Sale>(`/v1/sales/${id}/cancel`)
+  }
+
+  async refundSale(id: number): Promise<Sale> {
+    return apiService.patch<Sale>(`/v1/sales/${id}/refund`)
+  }
+
+  async addSaleItem(saleId: number, data: SaleItemData): Promise<Sale> {
+    return apiService.post<Sale>(`/v1/sales/${saleId}/sale_items`, { sale_item: data })
+  }
+
+  async updateSaleItem(saleId: number, itemId: number, data: Partial<SaleItemData>): Promise<Sale> {
+    return apiService.put<Sale>(`/v1/sales/${saleId}/sale_items/${itemId}`, { sale_item: data })
+  }
+
+  async removeSaleItem(saleId: number, itemId: number): Promise<Sale> {
+    return apiService.delete<Sale>(`/v1/sales/${saleId}/sale_items/${itemId}`)
+  }
+
+  async getDashboardStats(): Promise<DashboardStats> {
+    return apiService.get<DashboardStats>('/v1/sales/stats')
+  }
+}
+
+export const salesService = new SalesService()

@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: little_bees_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - little_bees_network
+
+  # Redis for caching and background jobs
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - little_bees_network
+
+  # Rails API Backend
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/little_bees_development
+      REDIS_URL: redis://redis:6379/0
+      RAILS_ENV: development
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./Backend:/app
+      - bundle_cache:/usr/local/bundle
+    networks:
+      - little_bees_network
+    command: sh -c "bundle install && rails db:prepare && rails server -b 0.0.0.0 -p 3001"
+
+  # Vue.js Frontend
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    networks:
+      - little_bees_network
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  bundle_cache:
+
+networks:
+  little_bees_network:
+    driver: bridge
