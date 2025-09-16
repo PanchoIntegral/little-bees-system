@@ -44,26 +44,31 @@ export interface Sale {
 }
 
 export interface SaleFilters {
-  query?: string
+  search?: string
   status?: string
   payment_method?: string
   user_id?: number
+  customer_id?: number
   start_date?: string
   end_date?: string
-  sort_by?: 'created_at' | 'total_amount' | 'status'
+  date_filter?: 'today' | 'this_week' | 'this_month'
+  min_amount?: number
+  max_amount?: number
+  sort_by?: 'created_at' | 'total_amount' | 'status' | 'payment_method' | 'customer_name'
+  sort_direction?: 'asc' | 'desc'
   page?: number
   per_page?: number
+  include_total?: boolean
 }
 
 export interface SaleResponse {
   sales: Sale[]
-  pagination: {
-    current_page: number
-    total_pages: number
-    total_count: number
-    per_page: number
-  }
+  pagination: PaginationMeta
+  filters_applied?: Record<string, any>
 }
+
+// Re-export PaginationMeta from products
+export type { PaginationMeta } from './products'
 
 export interface CreateSaleData {
   status?: string

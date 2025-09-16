@@ -1,43 +1,23 @@
 class Api::V1::SalesController < Api::BaseController
+  include Paginatable
+
   before_action :set_sale, only: [:show, :update, :destroy, :complete, :cancel, :refund]
 
   def index
-    @sales = Sale.includes(:user, :customer, :sale_items, :products).all
+    # Build base collection with optimized includes
+    base_collection = Sale.includes(:user, :customer, sale_items: :product)
 
-    # Apply filters if provided
-    @sales = @sales.where(status: params[:status]) if params[:status].present?
-    @sales = @sales.where(payment_method: params[:payment_method]) if params[:payment_method].present?
-    @sales = @sales.where(user_id: params[:user_id]) if params[:user_id].present?
-
-    # Date range filter
-    if params[:start_date].present? && params[:end_date].present?
-      start_date = Date.parse(params[:start_date])
-      end_date = Date.parse(params[:end_date])
-      @sales = @sales.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
-    end
+    # Apply filters
+    filtered_collection = apply_sales_filters(base_collection)
 
     # Apply sorting
-    case params[:sort_by]
-    when 'created_at'
-      @sales = @sales.order(created_at: :desc)
-    when 'total_amount'
-      @sales = @sales.order(:total_amount)
-    when 'status'
-      @sales = @sales.order(:status)
-    else
-      @sales = @sales.order(created_at: :desc)
-    end
+    sorted_collection = apply_sales_sorting(filtered_collection)
 
-    # Simple pagination
-    page = (params[:page] || 1).to_i
-    per_page = (params[:per_page] || 20).to_i
-    offset = (page - 1) * per_page
-
-    @sales = @sales.limit(per_page).offset(offset)
-    total_count = Sale.count
+    # Apply pagination with optimizations
+    result = paginate_collection(sorted_collection, pagination_params)
 
     render json: {
-      sales: @sales.as_json(
+      sales: result[:collection].as_json(
         include: {
           user: { only: [:id, :email, :first_name, :last_name] },
           customer: { only: [:id, :first_name, :last_name, :email] },
@@ -49,12 +29,8 @@ class Api::V1::SalesController < Api::BaseController
         },
         methods: [:receipt_number, :subtotal, :items_count, :formatted_total, :customer_name]
       ),
-      pagination: {
-        current_page: page,
-        per_page: per_page,
-        total_count: total_count,
-        total_pages: (total_count.to_f / per_page).ceil
-      }
+      pagination: result[:pagination_meta],
+      filters_applied: applied_sales_filters_summary
     }
   end
 
@@ -211,5 +187,128 @@ class Api::V1::SalesController < Api::BaseController
       :status, :payment_method, :notes, :customer_id,
       sale_items_attributes: [:product_id, :quantity, :unit_price]
     )
+  end
+
+  # Enhanced filtering for sales
+  def apply_sales_filters(collection)
+    # Status filter
+    collection = collection.where(status: params[:status]) if params[:status].present?
+
+    # Payment method filter
+    collection = collection.where(payment_method: params[:payment_method]) if params[:payment_method].present?
+
+    # User filter
+    collection = collection.where(user_id: params[:user_id]) if params[:user_id].present?
+
+    # Customer filter
+    collection = collection.where(customer_id: params[:customer_id]) if params[:customer_id].present?
+
+    # Date range filter
+    collection = apply_sales_date_filter(collection)
+
+    # Amount range filter
+    collection = apply_amount_range_filter(collection)
+
+    # Search filter (by receipt number or customer name)
+    collection = apply_sales_search(collection) if params[:search].present?
+
+    collection
+  end
+
+  def apply_sales_date_filter(collection)
+    if params[:start_date].present? && params[:end_date].present?
+      start_date = Date.parse(params[:start_date])
+      end_date = Date.parse(params[:end_date])
+      collection.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    elsif params[:date_filter].present?
+      # Predefined date filters
+      case params[:date_filter]
+      when 'today'
+        collection.today
+      when 'this_week'
+        collection.this_week
+      when 'this_month'
+        collection.this_month
+      else
+        collection
+      end
+    else
+      collection
+    end
+  end
+
+  def apply_amount_range_filter(collection)
+    if params[:min_amount].present? && params[:max_amount].present?
+      collection.where(total_amount: params[:min_amount].to_f..params[:max_amount].to_f)
+    elsif params[:min_amount].present?
+      collection.where('total_amount >= ?', params[:min_amount].to_f)
+    elsif params[:max_amount].present?
+      collection.where('total_amount <= ?', params[:max_amount].to_f)
+    else
+      collection
+    end
+  end
+
+  def apply_sales_search(collection)
+    search_term = "%#{params[:search]}%"
+    # Search in receipt numbers and join with customers for name search (SQLite compatible)
+    collection.left_joins(:customer)
+              .where(
+                "CAST(sales.id AS TEXT) LIKE ? OR LOWER(customers.first_name) LIKE LOWER(?) OR LOWER(customers.last_name) LIKE LOWER(?)",
+                search_term, search_term, search_term
+              )
+  end
+
+  # Enhanced sorting for sales
+  def apply_sales_sorting(collection)
+    sort_by = params[:sort_by] || 'created_at'
+    sort_direction = params[:sort_direction] == 'asc' ? :asc : :desc
+
+    case sort_by
+    when 'created_at'
+      collection.order(created_at: sort_direction)
+    when 'total_amount'
+      collection.order(total_amount: sort_direction)
+    when 'status'
+      collection.order(status: sort_direction)
+    when 'payment_method'
+      collection.order(payment_method: sort_direction)
+    when 'customer_name'
+      collection.left_joins(:customer)
+                .order("COALESCE(customers.first_name || ' ' || customers.last_name, 'Walk-in Customer') #{sort_direction}")
+    else
+      collection.order(created_at: :desc)
+    end
+  end
+
+  # Pagination parameters for sales
+  def pagination_params
+    {
+      page: params[:page],
+      per_page: params[:per_page],
+      include_total: params[:include_total],
+      base_query: nil
+    }
+  end
+
+  # Summary of applied filters for debugging
+  def applied_sales_filters_summary
+    filters = {}
+    filters[:status] = params[:status] if params[:status].present?
+    filters[:payment_method] = params[:payment_method] if params[:payment_method].present?
+    filters[:user_id] = params[:user_id] if params[:user_id].present?
+    filters[:customer_id] = params[:customer_id] if params[:customer_id].present?
+    filters[:search] = params[:search] if params[:search].present?
+    filters[:date_range] = {
+      start: params[:start_date],
+      end: params[:end_date],
+      filter: params[:date_filter]
+    } if params[:start_date].present? || params[:end_date].present? || params[:date_filter].present?
+    filters[:amount_range] = {
+      min: params[:min_amount],
+      max: params[:max_amount]
+    } if params[:min_amount].present? || params[:max_amount].present?
+
+    filters
   end
 end

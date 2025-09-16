@@ -1,55 +1,28 @@
 class Api::V1::ProductsController < ActionController::API
   include Response
+  include Paginatable
 
   before_action :set_product, only: [:show, :update, :destroy]
 
   def index
-    @products = Product.all
+    # Build base collection with includes for performance
+    base_collection = Product.includes(:image_attachment)
 
-    # Apply filters if provided
-    @products = @products.where("name ILIKE ?", "%#{params[:search]}%") if params[:search].present?
-    @products = @products.where(category: params[:category]) if params[:category].present?
-    @products = @products.where(active: params[:active]) if params[:active].present?
-
-    case params[:stock_status]
-    when 'in_stock'
-      @products = @products.where('stock_quantity > 0')
-    when 'low_stock'
-      @products = @products.where('stock_quantity <= low_stock_threshold AND stock_quantity > 0')
-    when 'out_of_stock'
-      @products = @products.where(stock_quantity: 0)
-    end
+    # Apply filters
+    filtered_collection = apply_product_filters(base_collection)
 
     # Apply sorting
-    case params[:sort_by]
-    when 'name'
-      @products = @products.order(:name)
-    when 'price'
-      @products = @products.order(:price)
-    when 'stock'
-      @products = @products.order(:stock_quantity)
-    else
-      @products = @products.order(:name)
-    end
+    sorted_collection = apply_product_sorting(filtered_collection)
 
-    # Simple pagination
-    page = (params[:page] || 1).to_i
-    per_page = (params[:per_page] || 20).to_i
-    offset = (page - 1) * per_page
-
-    @products = @products.limit(per_page).offset(offset)
-    total_count = Product.count
+    # Apply pagination with optimizations
+    result = paginate_collection(sorted_collection, pagination_params)
 
     render json: {
-      products: @products.as_json(
+      products: result[:collection].as_json(
         methods: [:formatted_price, :stock_status, :stock_status_color, :in_stock, :out_of_stock, :low_stock, :image_url]
       ),
-      pagination: {
-        current_page: page,
-        per_page: per_page,
-        total_count: total_count,
-        total_pages: (total_count.to_f / per_page).ceil
-      }
+      pagination: result[:pagination_meta],
+      filters_applied: applied_filters_summary
     }
   end
 
@@ -128,5 +101,105 @@ class Api::V1::ProductsController < ActionController::API
       :name, :description, :price, :sku, :category,
       :stock_quantity, :low_stock_threshold, :image, :active
     )
+  end
+
+  # Enhanced filtering for products
+  def apply_product_filters(collection)
+    # Text search in name, description, and SKU
+    collection = apply_text_search(collection) if params[:search].present?
+
+    # Category filter
+    collection = collection.where(category: params[:category]) if params[:category].present?
+
+    # Active status filter
+    collection = collection.where(active: params[:active]) if params[:active].present?
+
+    # Stock status filters
+    collection = apply_stock_filters(collection)
+
+    # Price range filter
+    collection = apply_price_range_filter(collection)
+
+    collection
+  end
+
+  def apply_text_search(collection)
+    search_term = "%#{params[:search]}%"
+    # Use LIKE for SQLite compatibility (case-insensitive search)
+    collection.where(
+      "LOWER(name) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?) OR LOWER(sku) LIKE LOWER(?)",
+      search_term, search_term, search_term
+    )
+  end
+
+  def apply_stock_filters(collection)
+    case params[:stock_status]
+    when 'in_stock'
+      collection.in_stock
+    when 'low_stock'
+      collection.low_stock
+    when 'out_of_stock'
+      collection.out_of_stock
+    else
+      collection
+    end
+  end
+
+  def apply_price_range_filter(collection)
+    if params[:min_price].present? && params[:max_price].present?
+      collection.where(price: params[:min_price].to_f..params[:max_price].to_f)
+    elsif params[:min_price].present?
+      collection.where('price >= ?', params[:min_price].to_f)
+    elsif params[:max_price].present?
+      collection.where('price <= ?', params[:max_price].to_f)
+    else
+      collection
+    end
+  end
+
+  # Enhanced sorting for products
+  def apply_product_sorting(collection)
+    sort_by = params[:sort_by] || 'name'
+    sort_direction = params[:sort_direction] == 'desc' ? :desc : :asc
+
+    case sort_by
+    when 'name'
+      collection.order(name: sort_direction)
+    when 'price'
+      collection.order(price: sort_direction)
+    when 'stock'
+      collection.order(stock_quantity: sort_direction)
+    when 'created_at'
+      collection.order(created_at: sort_direction)
+    when 'updated_at'
+      collection.order(updated_at: sort_direction)
+    else
+      collection.order(name: :asc)
+    end
+  end
+
+  # Pagination parameters
+  def pagination_params
+    {
+      page: params[:page],
+      per_page: params[:per_page],
+      include_total: params[:include_total],
+      base_query: nil # Could be used for cursor pagination
+    }
+  end
+
+  # Summary of applied filters for debugging
+  def applied_filters_summary
+    filters = {}
+    filters[:search] = params[:search] if params[:search].present?
+    filters[:category] = params[:category] if params[:category].present?
+    filters[:stock_status] = params[:stock_status] if params[:stock_status].present?
+    filters[:active] = params[:active] if params[:active].present?
+    filters[:price_range] = {
+      min: params[:min_price],
+      max: params[:max_price]
+    } if params[:min_price].present? || params[:max_price].present?
+
+    filters
   end
 end

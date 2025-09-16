@@ -21,6 +21,8 @@
                   type="text"
                   placeholder="Nombre del cliente..."
                   class="form-input w-full pl-10"
+                  autocomplete="off"
+                  :disabled="processing"
                 />
                 <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -37,6 +39,8 @@
                   type="text"
                   placeholder="Buscar productos por nombre..."
                   class="form-input w-full pl-10"
+                  autocomplete="off"
+                  :disabled="processing"
                   @input="handleProductSearch"
                 />
                 <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,9 +280,9 @@ function handleProductSearch() {
     filteredProducts.value = []
     return
   }
-  
-  filteredProducts.value = productsStore.products.filter(product => 
-    product.active && 
+
+  filteredProducts.value = productsStore.products.filter(product =>
+    product.active &&
     product.stock_quantity > 0 &&
     (product.name.toLowerCase().includes(productSearch.value.toLowerCase()) ||
      product.sku.toLowerCase().includes(productSearch.value.toLowerCase()))

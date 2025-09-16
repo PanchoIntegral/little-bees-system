@@ -28,19 +28,30 @@ export interface ProductFilters {
   category?: string
   active?: boolean
   stock_status?: 'in_stock' | 'low_stock' | 'out_of_stock'
-  sort_by?: 'name' | 'price' | 'stock'
+  sort_by?: 'name' | 'price' | 'stock' | 'created_at' | 'updated_at'
+  sort_direction?: 'asc' | 'desc'
+  min_price?: number
+  max_price?: number
   page?: number
   per_page?: number
+  include_total?: boolean
+}
+
+export interface PaginationMeta {
+  current_page: number
+  per_page: number
+  has_next_page: boolean | null
+  has_prev_page: boolean
+  total_count?: number
+  total_pages?: number
+  is_first_page?: boolean
+  is_last_page?: boolean
 }
 
 export interface ProductResponse {
   products: Product[]
-  pagination: {
-    current_page: number
-    total_pages: number
-    total_count: number
-    per_page: number
-  }
+  pagination: PaginationMeta
+  filters_applied?: Record<string, any>
 }
 
 export interface CreateProductData {
