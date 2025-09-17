@@ -1,6 +1,5 @@
 import { apiService } from './api'
 import { Product } from './products'
-import { Customer } from './customers'
 
 export interface User {
   id: number
@@ -39,7 +38,6 @@ export interface Sale {
   status_display: string
   customer_name: string
   user: User
-  customer?: Customer
   sale_items: SaleItem[]
 }
 

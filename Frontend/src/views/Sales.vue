@@ -320,13 +320,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useSalesStore } from '../stores/sales'
-import { useCustomersStore } from '../stores/customers'
 import type { Sale, SaleFilters } from '../services/sales'
 import { pdfService } from '../services/pdf'
 import NewSaleModal from '../components/NewSaleModal.vue'
 
 const salesStore = useSalesStore()
-const customersStore = useCustomersStore()
 
 // Reactive state
 const searchQuery = ref('')

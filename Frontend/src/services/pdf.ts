@@ -142,8 +142,7 @@ export class PDFService {
           <div class="sections">
             <div class="card">
               <h3>Cliente</h3>
-              <p><strong>${(sale as any).customer?.first_name || ''} ${(sale as any).customer?.last_name || ''}</strong></p>
-              <p>${(sale as any).customer?.email || ''}</p>
+              <p><strong>${(sale as any).customer_name || 'Walk-in Customer'}</strong></p>
             </div>
             <div class="card">
               <h3>Pago</h3>

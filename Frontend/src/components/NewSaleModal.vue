@@ -237,7 +237,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useProductsStore } from '../stores/products'
 import { useSalesStore } from '../stores/sales'
-import { useCustomersStore } from '../stores/customers'
 import type { Product } from '../services/products'
 import type { CreateSaleData } from '../services/sales'
 
@@ -249,7 +248,6 @@ const emit = defineEmits<{
 // Stores
 const productsStore = useProductsStore()
 const salesStore = useSalesStore()
-const customersStore = useCustomersStore()
 
 // Form data
 const customerName = ref('')
@@ -345,27 +343,8 @@ async function processSale() {
   processing.value = true
   
   try {
-    // Create customer if name provided
+    // Use anonymous customer name if provided
     let customerId = undefined
-    if (customerName.value.trim()) {
-      try {
-        // Split name into first and last name
-        const nameParts = customerName.value.trim().split(' ')
-        const firstName = nameParts[0] || 'Cliente'
-        const lastName = nameParts.slice(1).join(' ') || 'General'
-        
-        const customer = await customersStore.createCustomer({
-          first_name: firstName,
-          last_name: lastName,
-          email: '',
-          phone: '000-000-0000', // Provide a default phone to satisfy validation
-          address: ''
-        })
-        customerId = customer.id
-      } catch (error) {
-        console.warn('Could not create customer, proceeding without:', error)
-      }
-    }
     
     // Prepare sale items for the backend
     const saleItemsAttributes = cartItems.value.map(item => ({
@@ -380,6 +359,7 @@ async function processSale() {
       payment_method: paymentMethod.value,
       notes: notes.value || undefined,
       customer_id: customerId,
+      anonymous_customer_name: customerName.value.trim() || null,
       sale_items_attributes: saleItemsAttributes
     }
     

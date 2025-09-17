@@ -38,14 +38,6 @@
               <div class="absolute bottom-0 left-0 w-full h-0.5 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" :class="{ 'scale-x-100': $route.name === 'sales' }"></div>
             </RouterLink>
             
-            <RouterLink 
-              to="/customers" 
-              class="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-all duration-200 group"
-              :class="{ 'text-amber-600': $route.name === 'customers' }"
-            >
-              Customers
-              <div class="absolute bottom-0 left-0 w-full h-0.5 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" :class="{ 'scale-x-100': $route.name === 'customers' }"></div>
-            </RouterLink>
 
             <!-- User Menu -->
             <div class="flex items-center space-x-4 ml-8 pl-8 border-l border-gray-200">
