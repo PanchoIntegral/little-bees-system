@@ -124,6 +124,33 @@ export const useSalesStore = defineStore('sales', () => {
     }
   }
 
+  async function deleteAllSales() {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await salesService.deleteAllSales()
+      sales.value = []
+      currentSale.value = null
+
+      // Reset pagination
+      pagination.value = {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 0,
+        per_page: 20
+      }
+
+      return response
+    } catch (err: any) {
+      error.value = err.response?.data?.error || 'Failed to delete all sales'
+      console.error('Error deleting all sales:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function completeSale(id: number) {
     loading.value = true
     error.value = null
@@ -259,6 +286,7 @@ export const useSalesStore = defineStore('sales', () => {
     createSale,
     updateSale,
     deleteSale,
+    deleteAllSales,
     completeSale,
     cancelSale,
     addSaleItem,

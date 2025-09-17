@@ -78,6 +78,10 @@ export class PDFService {
 
     
 
+    const subtotal = this.calculateOriginalSubtotal(sale);
+    const taxableAmount = subtotal - discountValue;
+    const finalTotal = taxableAmount + taxValue;
+
     return `
       <!DOCTYPE html>
       <html lang="es">
@@ -182,10 +186,10 @@ export class PDFService {
               ${((sale as any).notes || '').length ? `<strong>Notas:</strong> ${(sale as any).notes}` : ''}
             </div>
             <div class="summary">
-              <div class="row"><span>Subtotal</span><span>$${this.formatCurrency((sale as any).subtotal)}</span></div>
-              ${discountValue > 0 ? `<div class="row"><span>Descuento</span><span>- $${this.formatCurrency(discountValue)}</span></div>` : ''}
+              <div class="row"><span>Subtotal</span><span>$${this.formatCurrency(this.calculateOriginalSubtotal(sale))}</span></div>
+              ${this.generateDiscountRows(sale)}
               <div class="row"><span>Impuestos</span><span>$${this.formatCurrency(taxValue)}</span></div>
-              <div class="row total"><span>Total</span><span>$${this.formatCurrency((sale as any).total_amount)}</span></div>
+              <div class="row total"><span>Total</span><span>${this.formatCurrency(finalTotal)}</span></div>
             </div>
           </div>
 
@@ -201,6 +205,110 @@ export class PDFService {
       </body>
       </html>
     `;
+  }
+
+  /**
+   * Generate discount rows with offer details
+   */
+  private static generateDiscountRows(sale: any): string {
+    let discountRows = '';
+    let totalDiscount = 0;
+
+    // Collect all discount information from sale items
+    const offerDetails: { [key: string]: { name: string, amount: number, items: any[] } } = {};
+
+    if ((sale as any).sale_items && Array.isArray((sale as any).sale_items)) {
+      (sale as any).sale_items.forEach((item: any) => {
+        if (item.discount_amount && parseFloat(item.discount_amount) > 0) {
+          const discountAmount = parseFloat(item.discount_amount);
+          totalDiscount += discountAmount;
+
+          if (item.offer_names && Array.isArray(item.offer_names) && item.offer_names.length > 0) {
+            // Group by offer name
+            item.offer_names.forEach((offerName: string) => {
+              if (!offerDetails[offerName]) {
+                offerDetails[offerName] = {
+                  name: offerName,
+                  amount: 0,
+                  items: []
+                };
+              }
+              offerDetails[offerName].amount += discountAmount / item.offer_names.length;
+              offerDetails[offerName].items.push(item);
+            });
+          } else {
+            // Generic discount without offer name
+            if (!offerDetails['Descuento especial']) {
+              offerDetails['Descuento especial'] = {
+                name: 'Descuento especial',
+                amount: 0,
+                items: []
+              };
+            }
+            offerDetails['Descuento especial'].amount += discountAmount;
+            offerDetails['Descuento especial'].items.push(item);
+          }
+        }
+      });
+    }
+
+    // Generate rows for each offer
+    Object.values(offerDetails).forEach(offer => {
+      const percentage = this.calculateDiscountPercentage(offer.items, offer.amount);
+      const percentageText = percentage > 0 ? ` (${percentage.toFixed(1)}%)` : '';
+
+      discountRows += `<div class="row">
+        <span>${offer.name}${percentageText}</span>
+        <span>- $${this.formatCurrency(offer.amount)}</span>
+      </div>`;
+    });
+
+    // If no specific offers but there's a general discount
+    if (Object.keys(offerDetails).length === 0) {
+      const discountValue = typeof (sale as any).discount_amount === 'string'
+        ? parseFloat((sale as any).discount_amount)
+        : ((sale as any).discount_amount || 0);
+
+      if (discountValue > 0) {
+        discountRows = `<div class="row">
+          <span>Descuento</span>
+          <span>- $${this.formatCurrency(discountValue)}</span>
+        </div>`;
+      }
+    }
+
+    return discountRows;
+  }
+
+  /**
+   * Calculate the original subtotal from sale items
+   */
+  private static calculateOriginalSubtotal(sale: any): number {
+    if (!sale.sale_items || !Array.isArray(sale.sale_items)) {
+      return 0;
+    }
+
+    return sale.sale_items.reduce((sum: number, item: any) => {
+      const unitPrice = parseFloat(item.unit_price || 0);
+      const quantity = parseInt(item.quantity || 0);
+      return sum + (unitPrice * quantity);
+    }, 0);
+  }
+
+  /**
+   * Calculate discount percentage for an offer
+   */
+  private static calculateDiscountPercentage(items: any[], discountAmount: number): number {
+    const originalTotal = items.reduce((sum, item) => {
+      const unitPrice = parseFloat(item.unit_price || 0);
+      const quantity = parseInt(item.quantity || 0);
+      return sum + (unitPrice * quantity);
+    }, 0);
+
+    if (originalTotal > 0) {
+      return (discountAmount / originalTotal) * 100;
+    }
+    return 0;
   }
 
   /**

@@ -70,6 +70,11 @@ class Sale < ApplicationRecord
   def subtotal
     sale_items.to_a.sum { |item| (item.quantity || 0) * (item.unit_price || 0) }
   end
+
+  # Method to get subtotal including discounts from line items
+  def subtotal_with_discounts
+    sale_items.to_a.sum { |item| item.line_total || 0 }
+  end
   
   def items_count
     sale_items.sum(:quantity)
@@ -173,7 +178,9 @@ class Sale < ApplicationRecord
   end
   
   def customer_name
-    customer&.full_name || 'Walk-in Customer'
+    return customer.full_name if customer.present?
+    return anonymous_customer_name if anonymous_customer_name.present?
+    'Walk-in Customer'
   end
   
   def formatted_total
@@ -194,21 +201,26 @@ class Sale < ApplicationRecord
     # Calculate subtotal from sale_items (including unsaved ones for nested attributes)
     current_subtotal = calculate_current_subtotal
 
-    current_discount = if discount_amount.present? && discount_amount > 0
+    # Calculate item-level discounts
+    item_discounts = sale_items.sum { |item| item.discount_amount || 0 }
+
+    # If we have item-level discounts, use those. Otherwise, calculate global discount
+    current_discount = if item_discounts > 0
+                         item_discounts.to_f
+                       elsif discount_amount.present? && discount_amount > 0
                          discount_amount.to_f
                        else
                          calculate_discount_amount(current_subtotal).to_f
                        end
+
     self.discount_amount = current_discount
 
-    current_tax = if tax_amount.present? && tax_amount > 0
-                    tax_amount.to_f
-                  else
-                    (current_subtotal - current_discount) * 0.08
-                  end
+    # Tax should be calculated on the subtotal after the discount is applied
+    taxable_amount = current_subtotal - current_discount
+    current_tax = taxable_amount * ::TAX_RATE # Tax calculated on the subtotal after discount
     self.tax_amount = current_tax.to_f
 
-    self.total_amount = (current_subtotal + current_tax - current_discount).to_f
+    self.total_amount = (taxable_amount + current_tax).to_f
   end
   
   def calculate_current_subtotal

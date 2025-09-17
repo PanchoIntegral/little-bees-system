@@ -29,6 +29,9 @@ Rails.application.routes.draw do
       get 'sales/stats', to: 'sales#stats'
 
       resources :sales do
+        collection do
+          delete :destroy_all
+        end
         member do
           patch :complete
           patch :cancel

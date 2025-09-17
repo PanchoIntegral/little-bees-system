@@ -24,7 +24,8 @@ class Api::V1::SalesController < Api::BaseController
           sale_items: {
             include: {
               product: { only: [:id, :name, :sku, :price] }
-            }
+            },
+            methods: [:discount_applied?, :formatted_discount_amount, :offer_names, :original_total_price]
           }
         },
         methods: [:receipt_number, :subtotal, :items_count, :formatted_total, :customer_name]
@@ -61,7 +62,8 @@ class Api::V1::SalesController < Api::BaseController
           sale_items: {
             include: {
               product: { only: [:id, :name, :sku, :price] }
-            }
+            },
+            methods: [:discount_applied?, :formatted_discount_amount, :offer_names, :original_total_price]
           }
         },
         methods: [:receipt_number, :subtotal, :items_count, :formatted_total, :customer_name]
@@ -80,7 +82,8 @@ class Api::V1::SalesController < Api::BaseController
           sale_items: {
             include: {
               product: { only: [:id, :name, :sku, :price] }
-            }
+            },
+            methods: [:discount_applied?, :formatted_discount_amount, :offer_names, :original_total_price]
           }
         },
         methods: [:receipt_number, :subtotal, :items_count, :formatted_total, :customer_name]
@@ -98,6 +101,29 @@ class Api::V1::SalesController < Api::BaseController
     end
   end
 
+  def destroy_all
+    # Only allow admins to delete all sales
+    unless current_user&.admin?
+      render json: { error: 'Unauthorized. Admin access required.' }, status: :forbidden
+      return
+    end
+
+    begin
+      deleted_count = Sale.count
+      Sale.destroy_all
+
+      render json: {
+        message: "Successfully deleted all #{deleted_count} sales",
+        deleted_count: deleted_count
+      }, status: :ok
+    rescue StandardError => e
+      render json: {
+        error: 'Failed to delete sales',
+        details: e.message
+      }, status: :unprocessable_entity
+    end
+  end
+
   def complete
     if @sale.complete!
       render json: @sale.as_json(
@@ -107,7 +133,8 @@ class Api::V1::SalesController < Api::BaseController
           sale_items: {
             include: {
               product: { only: [:id, :name, :sku, :price] }
-            }
+            },
+            methods: [:discount_applied?, :formatted_discount_amount, :offer_names, :original_total_price]
           }
         },
         methods: [:receipt_number, :subtotal, :items_count, :formatted_total, :customer_name]
@@ -188,8 +215,8 @@ class Api::V1::SalesController < Api::BaseController
 
   def sale_params
     params.require(:sale).permit(
-      :status, :payment_method, :notes, :customer_id,
-      sale_items_attributes: [:product_id, :quantity, :unit_price]
+      :status, :payment_method, :notes, :customer_id, :anonymous_customer_name,
+      sale_items_attributes: [:product_id, :quantity, :unit_price, :discount_amount, applied_offers: []]
     )
   end
 

@@ -29,13 +29,22 @@
               <div class="absolute bottom-0 left-0 w-full h-0.5 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" :class="{ 'scale-x-100': $route.name === 'products' }"></div>
             </RouterLink>
             
-            <RouterLink 
-              to="/sales" 
+            <RouterLink
+              to="/sales"
               class="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-all duration-200 group"
               :class="{ 'text-amber-600': $route.name === 'sales' }"
             >
               Sales
               <div class="absolute bottom-0 left-0 w-full h-0.5 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" :class="{ 'scale-x-100': $route.name === 'sales' }"></div>
+            </RouterLink>
+
+            <RouterLink
+              to="/discounts-offers"
+              class="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-all duration-200 group"
+              :class="{ 'text-amber-600': $route.name === 'discounts-offers' }"
+            >
+              Ofertas
+              <div class="absolute bottom-0 left-0 w-full h-0.5 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" :class="{ 'scale-x-100': $route.name === 'discounts-offers' }"></div>
             </RouterLink>
             
 

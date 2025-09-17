@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_16_213000) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_17_144902) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -88,6 +88,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_16_213000) do
     t.integer "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "discount_amount", precision: 10, scale: 2, default: "0.0"
+    t.text "applied_offers"
     t.index ["product_id"], name: "index_sale_items_on_product_id"
     t.index ["sale_id", "product_id"], name: "index_sale_items_on_sale_id_and_product_id", unique: true
     t.index ["sale_id"], name: "index_sale_items_on_sale_id"

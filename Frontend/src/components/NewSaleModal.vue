@@ -128,6 +128,11 @@
                     <div class="flex-1">
                       <h5 class="font-medium text-gray-900">{{ item.product.name }}</h5>
                       <p class="text-sm text-gray-500">{{ item.product.formatted_price }} c/u</p>
+                      <div v-if="item.appliedOffers && item.appliedOffers.length > 0" class="mt-1">
+                        <p v-for="offer in item.appliedOffers" :key="offer.id" class="text-xs text-green-600 font-medium">
+                          🏷️ {{ offer.name }}
+                        </p>
+                      </div>
                     </div>
                     <button
                       @click="removeFromCart(index)"
@@ -166,6 +171,9 @@
                     </div>
                     <div class="font-semibold text-gray-900">
                       ${{ (item.product.price * item.quantity).toFixed(2) }}
+                      <div v-if="item.discountAmount && item.discountAmount > 0" class="text-xs text-green-600 mt-1">
+                        Descuento: -${{ item.discountAmount.toFixed(2) }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -174,29 +182,58 @@
 
             <!-- Sale Summary -->
             <div class="bg-green-50 p-4 rounded-lg">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">Resumen de la Venta</h4>
+              <h4 class="text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+                Precálculo de la Venta
+              </h4>
+
+
+              <!-- Tax Info (Fixed) -->
+              <div v-if="cartItems.length > 0" class="mb-4 p-3 bg-gray-100 rounded-md border">
+                <h5 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                  </svg>
+                  Impuesto (Automático)
+                </h5>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Tasa de impuesto fija:</span>
+                  <span class="text-sm font-semibold text-gray-800">8%</span>
+                </div>
+              </div>
+
+              <!-- Calculation Summary -->
               <div class="space-y-2">
                 <div class="flex justify-between">
                   <span class="text-gray-600">Subtotal:</span>
-                  <span class="font-medium">${{ subtotal.toFixed(2) }}</span>
-                </div>
-                
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">Descuentos:</span>
-                  <span class="font-medium text-gray-500">Se calcularán al procesar</span>
+                  <span class="font-medium transition-all duration-300" :class="{ 'text-blue-600 font-bold': subtotalChanged }">${{ subtotal.toFixed(2) }}</span>
                 </div>
 
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-600">Impuestos:</span>
-                  <span class="font-medium text-gray-500">Se calcularán al procesar</span>
+                <div v-if="totalOfferDiscount > 0" class="flex justify-between text-sm">
+                  <span class="text-gray-600">Descuentos (Ofertas):</span>
+                  <span class="font-medium text-red-600 transition-all duration-300">-${{ totalOfferDiscount.toFixed(2) }}</span>
                 </div>
+
+                <div v-if="taxAmount > 0" class="flex justify-between text-sm">
+                  <span class="text-gray-600">Impuesto ({{ taxRate }}%):</span>
+                  <span class="font-medium text-orange-600 transition-all duration-300" :class="{ 'text-orange-700 font-bold': taxChanged }">+${{ taxAmount.toFixed(2) }}</span>
+                </div>
+
                 <hr class="border-gray-300">
                 <div class="flex justify-between text-lg font-bold">
-                  <span>Total (Aprox):</span>
-                  <span class="text-green-600">${{ subtotal.toFixed(2) }}</span>
+                  <span>Total:</span>
+                  <span class="text-green-600 transition-all duration-500" :class="{ 'text-green-700 text-xl': totalChanged }">${{ finalTotal.toFixed(2) }}</span>
                 </div>
-                 <div class="text-center text-xs text-gray-500 pt-2">
-                  El total final, incluyendo impuestos y descuentos, se calculará en el backend.
+
+                <div v-if="cartItems.length > 0" class="pt-3 space-y-2">
+                  <div class="text-center text-xs text-green-600 flex items-center justify-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Cálculo en tiempo real
+                  </div>
                 </div>
               </div>
             </div>
@@ -234,9 +271,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useProductsStore } from '../stores/products'
 import { useSalesStore } from '../stores/sales'
+import { useOffersStore } from '../stores/offers'
 import type { Product } from '../services/products'
 import type { CreateSaleData } from '../services/sales'
 
@@ -248,6 +286,7 @@ const emit = defineEmits<{
 // Stores
 const productsStore = useProductsStore()
 const salesStore = useSalesStore()
+const offersStore = useOffersStore()
 
 // Form data
 const customerName = ref('')
@@ -256,10 +295,20 @@ const paymentMethod = ref('cash')
 const notes = ref('')
 const processing = ref(false)
 
+// Tax configuration
+const taxRate = ref(8) // Fixed 8% tax rate
+
+// Visual feedback states
+const subtotalChanged = ref(false)
+const taxChanged = ref(false)
+const totalChanged = ref(false)
+
 // Cart
 interface CartItem {
   product: Product
   quantity: number
+  appliedOffers?: any[]
+  discountAmount?: number
 }
 
 const cartItems = ref<CartItem[]>([])
@@ -270,6 +319,24 @@ const filteredProducts = ref<Product[]>([])
 // Computed
 const subtotal = computed(() => {
   return cartItems.value.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+})
+
+// Calculate total offer discounts applied to all items
+const totalOfferDiscount = computed(() => {
+  return cartItems.value.reduce((sum, item) => sum + (item.discountAmount || 0), 0)
+})
+
+const taxableAmount = computed(() => {
+  return Math.max(0, subtotal.value - totalOfferDiscount.value)
+})
+
+const taxAmount = computed(() => {
+  if (taxRate.value <= 0) return 0
+  return (taxableAmount.value * taxRate.value) / 100
+})
+
+const finalTotal = computed(() => {
+  return Math.max(0, subtotal.value - totalOfferDiscount.value + taxAmount.value)
 })
 
 // Methods
@@ -287,23 +354,28 @@ function handleProductSearch() {
   ).slice(0, 10) // Limit to 10 results
 }
 
-function selectProduct(product: Product) {
+async function selectProduct(product: Product) {
   // Check if product is already in cart
   const existingIndex = cartItems.value.findIndex(item => item.product.id === product.id)
-  
+
   if (existingIndex !== -1) {
     // Increase quantity if product exists and stock allows
     if (cartItems.value[existingIndex].quantity < product.stock_quantity) {
       cartItems.value[existingIndex].quantity++
+      await updateItemOffers(existingIndex)
     }
   } else {
     // Add new product to cart
-    cartItems.value.push({
+    const newItem: CartItem = {
       product,
-      quantity: 1
-    })
+      quantity: 1,
+      appliedOffers: [],
+      discountAmount: 0
+    }
+    cartItems.value.push(newItem)
+    await updateItemOffers(cartItems.value.length - 1)
   }
-  
+
   // Clear search
   productSearch.value = ''
   filteredProducts.value = []
@@ -313,29 +385,75 @@ function removeFromCart(index: number) {
   cartItems.value.splice(index, 1)
 }
 
-function increaseQuantity(index: number) {
+async function increaseQuantity(index: number) {
   const item = cartItems.value[index]
   if (item.quantity < item.product.stock_quantity) {
     item.quantity++
+    await updateItemOffers(index)
   }
 }
 
-function decreaseQuantity(index: number) {
+async function decreaseQuantity(index: number) {
   const item = cartItems.value[index]
   if (item.quantity > 1) {
     item.quantity--
+    await updateItemOffers(index)
   }
 }
 
-function updateQuantity(index: number, newQuantity: number) {
+async function updateQuantity(index: number, newQuantity: number) {
   const item = cartItems.value[index]
   if (newQuantity >= 1 && newQuantity <= item.product.stock_quantity) {
     item.quantity = newQuantity
+    await updateItemOffers(index)
   } else {
     // Reset to valid value
     item.quantity = Math.max(1, Math.min(newQuantity, item.product.stock_quantity))
+    await updateItemOffers(index)
   }
 }
+
+// Offer calculation methods
+async function updateItemOffers(index: number) {
+  const item = cartItems.value[index]
+  try {
+    const discountData = await offersStore.calculateProductDiscount(
+      item.product.id,
+      item.quantity,
+      item.product.price
+    )
+
+    item.discountAmount = discountData.discount_amount
+    item.appliedOffers = discountData.applied_offers
+  } catch (error) {
+    console.error('Error calculating offers for product:', error)
+    item.discountAmount = 0
+    item.appliedOffers = []
+  }
+}
+
+function triggerSubtotalAnimation() {
+  subtotalChanged.value = true
+  setTimeout(() => {
+    subtotalChanged.value = false
+  }, 1000)
+}
+
+
+function triggerTaxAnimation() {
+  taxChanged.value = true
+  setTimeout(() => {
+    taxChanged.value = false
+  }, 1000)
+}
+
+function triggerTotalAnimation() {
+  totalChanged.value = true
+  setTimeout(() => {
+    totalChanged.value = false
+  }, 1500)
+}
+
 
 async function processSale() {
   if (cartItems.value.length === 0) return
@@ -350,7 +468,9 @@ async function processSale() {
     const saleItemsAttributes = cartItems.value.map(item => ({
       product_id: item.product.id,
       quantity: item.quantity,
-      unit_price: item.product.price
+      unit_price: item.product.price,
+      discount_amount: item.discountAmount || 0,
+      applied_offers: item.appliedOffers || []
     }));
 
     // Create sale with nested items
@@ -365,10 +485,15 @@ async function processSale() {
     
     const sale = await salesStore.createSale(saleData)
     
+    // Reset form
+    cartItems.value = []
+    customerName.value = ''
+    notes.value = ''
+
     // Emit success and close
     emit('success', sale)
     emit('close')
-    
+
   } catch (error) {
     console.error('Error processing sale:', error)
     const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
@@ -378,11 +503,34 @@ async function processSale() {
   }
 }
 
+// Watchers for visual feedback
+watch(subtotal, () => {
+  triggerSubtotalAnimation()
+  triggerTotalAnimation()
+})
+
+watch(totalOfferDiscount, () => {
+  triggerTotalAnimation()
+})
+
+watch(taxRate, () => {
+  triggerTaxAnimation()
+  triggerTotalAnimation()
+})
+
+watch(cartItems, () => {
+  triggerTotalAnimation()
+}, { deep: true })
+
 // Lifecycle
 onMounted(async () => {
   // Load products if not already loaded
   if (productsStore.products.length === 0) {
     await productsStore.fetchProducts()
+  }
+  // Load offers if not already loaded
+  if (offersStore.offers.length === 0) {
+    await offersStore.fetchOffers()
   }
 })
 </script>

@@ -120,6 +120,10 @@ class SalesService {
     return apiService.delete<{ message: string }>(`/v1/sales/${id}`)
   }
 
+  async deleteAllSales(): Promise<{ message: string; deleted_count: number }> {
+    return apiService.delete<{ message: string; deleted_count: number }>('/v1/sales/destroy_all')
+  }
+
   async completeSale(id: number): Promise<Sale> {
     return apiService.patch<Sale>(`/v1/sales/${id}/complete`)
   }

@@ -15,15 +15,30 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
         </div>
-        <button 
-          @click="showNewSaleModal = true"
-          class="btn btn-primary"
-        >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          New Sale
-        </button>
+        <div class="flex gap-3">
+          <!-- Admin-only Delete All Sales button -->
+          <button
+            v-if="isAdmin"
+            @click="showDeleteAllConfirmation = true"
+            class="btn btn-danger"
+            :disabled="salesStore.loading || salesStore.sales.length === 0"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Delete All Sales
+          </button>
+
+          <button
+            @click="showNewSaleModal = true"
+            class="btn btn-primary"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            New Sale
+          </button>
+        </div>
       </div>
     </div>
 
@@ -240,6 +255,47 @@
       @success="handleSaleSuccess"
     />
 
+    <!-- Delete All Sales Confirmation Modal -->
+    <div v-if="showDeleteAllConfirmation" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="showDeleteAllConfirmation = false">
+      <div class="relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 border w-96 shadow-lg rounded-md bg-white" @click.stop>
+        <div class="mt-3 text-center">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mt-2">⚠️ Delete All Sales</h3>
+          <div class="mt-2 px-7 py-3">
+            <p class="text-sm text-gray-500">
+              Are you sure you want to delete <strong>ALL {{ salesStore.sales.length }} sales</strong>? This action cannot be undone and will permanently remove all sales data from the system.
+            </p>
+          </div>
+          <div class="flex justify-center space-x-3 mt-4">
+            <button
+              @click="showDeleteAllConfirmation = false"
+              class="btn btn-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              @click="deleteAllSales"
+              :disabled="deletingAllSales"
+              class="btn btn-danger"
+            >
+              <span v-if="deletingAllSales" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Deleting...
+              </span>
+              <span v-else>Yes, Delete All</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Sale Details Modal (placeholder) -->
     <div v-if="showSaleDetails && selectedSale" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="closeSaleDetails">
       <div class="relative top-10 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white" @click.stop>
@@ -321,7 +377,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useSalesStore } from '../stores/sales'
 import type { Sale, SaleFilters } from '../services/sales'
+import { salesService } from '../services/sales'
 import { pdfService } from '../services/pdf'
+import { authService } from '../services/auth'
 import NewSaleModal from '../components/NewSaleModal.vue'
 
 const salesStore = useSalesStore()
@@ -334,8 +392,14 @@ const selectedDate = ref('')
 const showNewSaleModal = ref(false)
 const showSaleDetails = ref(false)
 const selectedSale = ref<Sale | null>(null)
+const showDeleteAllConfirmation = ref(false)
+const deletingAllSales = ref(false)
 
 // Computed
+const isAdmin = computed(() => {
+  return authService.currentUser.value?.role === 'admin'
+})
+
 const visiblePages = computed(() => {
   const pages = []
   const current = salesStore.pagination.current_page
@@ -434,6 +498,36 @@ async function generateReceipt(saleId: number) {
   } catch (error) {
     console.error('Error generating receipt:', error)
     alert('Error al generar el recibo. Por favor, inténtalo de nuevo.')
+  }
+}
+
+async function deleteAllSales() {
+  if (!isAdmin.value) {
+    alert('Unauthorized. Admin access required.')
+    return
+  }
+
+  deletingAllSales.value = true
+
+  try {
+    const response = await salesService.deleteAllSales()
+
+    // Show success message
+    alert(`Successfully deleted ${response.deleted_count} sales`)
+
+    // Close modal and refresh sales list
+    showDeleteAllConfirmation.value = false
+    await loadSales()
+
+  } catch (error: any) {
+    console.error('Error deleting all sales:', error)
+
+    // Show error message
+    const errorMessage = error.response?.data?.error || 'Failed to delete sales. Please try again.'
+    alert(`Error: ${errorMessage}`)
+
+  } finally {
+    deletingAllSales.value = false
   }
 }
 
