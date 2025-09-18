@@ -265,6 +265,9 @@
       @success="handleOfferEditSuccess"
       @close="closeOfferModal"
     />
+
+    <!-- Toast Container -->
+    <ToastContainer />
   </div>
 </template>
 
@@ -272,12 +275,15 @@
 import { ref, computed, onMounted } from 'vue'
 import { useProductsStore } from '../stores/products'
 import { useOffersStore } from '../stores/offers'
+import { useToast } from '../services/toast'
 import SimpleOfferModal from '../components/SimpleOfferModal.vue'
 import CreateOfferModal from '../components/CreateOfferModal.vue'
+import ToastContainer from '../components/ToastContainer.vue'
 
 // Stores
 const productsStore = useProductsStore()
 const offersStore = useOffersStore()
+const toast = useToast()
 
 // Reactive data
 const searchQuery = ref('')
@@ -362,9 +368,13 @@ async function toggleOfferStatus(offer: any) {
     console.log('Toggle successful')
     // Refresh offers to get updated state
     await offersStore.fetchOffers()
+
+    // Show success message
+    const statusText = offer.active ? 'desactivada' : 'activada'
+    toast.show(`Oferta ${statusText} exitosamente`, 'success')
   } catch (error) {
     console.error('Error toggling offer status:', error)
-    alert('Error al cambiar el estado de la oferta: ' + error.message)
+    toast.show(`Error al cambiar el estado de la oferta: ${error.message}`, 'error')
   }
 }
 
@@ -372,9 +382,10 @@ async function deleteOffer(offer: any) {
   if (confirm('¿Estás seguro de que quieres eliminar esta oferta?')) {
     try {
       await offersStore.deleteOffer(offer.id)
+      toast.show('Oferta eliminada exitosamente', 'success')
     } catch (error) {
       console.error('Error deleting offer:', error)
-      alert('Error al eliminar la oferta')
+      toast.show('Error al eliminar la oferta', 'error')
     }
   }
 }
@@ -391,9 +402,10 @@ async function handleOfferSuccess(offerData: any) {
     // Since SimpleOfferModal only creates new offers, we don't need to check for updates
     await offersStore.fetchOffers() // Refresh the offers list to show the new offer
     closeOfferModal()
+    toast.show('Oferta creada exitosamente', 'success')
   } catch (error) {
     console.error('Error saving offer:', error)
-    alert('Error al guardar la oferta')
+    toast.show('Error al guardar la oferta', 'error')
   }
 }
 
@@ -408,9 +420,10 @@ async function handleOfferEditSuccess(offerData: any) {
 
     await offersStore.fetchOffers() // Refresh the offers list
     closeOfferModal()
+    toast.show('Oferta actualizada exitosamente', 'success')
   } catch (error) {
     console.error('Error updating offer:', error)
-    alert('Error al actualizar la oferta')
+    toast.show('Error al actualizar la oferta', 'error')
   }
 }
 
