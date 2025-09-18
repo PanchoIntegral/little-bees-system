@@ -6,8 +6,8 @@
           <CurrencyDollarIcon class="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 class="text-3xl font-bold text-gray-900">Sales</h1>
-          <p class="text-gray-600 text-sm mt-1">Manage and track all your sales transactions</p>
+          <h1 class="text-3xl font-bold text-gray-900">Ventas</h1>
+          <p class="text-gray-600 text-sm mt-1">Gestiona y rastrea todas tus transacciones de ventas</p>
         </div>
       </div>
       <div class="flex flex-col sm:flex-row gap-3">
@@ -15,7 +15,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search sales..."
+            placeholder="Buscar ventas..."
             class="form-input pl-10 pr-4 py-2 w-full sm:w-80"
             @input="handleSearch"
           />
@@ -31,7 +31,7 @@
               @click="selectionModeActive = true"
               class="btn btn-secondary"
             >
-              Manage Sales
+              Gestionar Ventas
             </button>
             <template v-else>
               <button
@@ -39,13 +39,13 @@
                 class="btn btn-danger"
                 :disabled="salesStore.loading || selectedSales.length === 0"
               >
-                Delete Selected ({{ selectedSales.length }})
+                Eliminar Seleccionados ({{ selectedSales.length }})
               </button>
               <button
                 @click="cancelSelectionMode"
                 class="btn btn-outline"
               >
-                Cancel
+                Cancelar
               </button>
             </template>
           </div>

@@ -8,8 +8,8 @@
             <TagIcon class="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 class="text-3xl font-bold text-gray-900">Discounts & Offers</h1>
-            <p class="text-gray-600 text-sm mt-1">Manage special offers and discounts for your products</p>
+            <h1 class="text-3xl font-bold text-gray-900">Descuentos y Ofertas</h1>
+            <p class="text-gray-600 text-sm mt-1">Gestiona ofertas especiales y descuentos para tus productos</p>
           </div>
         </div>
         <button
@@ -17,7 +17,7 @@
           class="btn btn-amber"
         >
           <PlusIcon class="w-5 h-5 mr-2" />
-          New Offer
+          Nueva Oferta
         </button>
       </div>
     </div>
@@ -34,31 +34,14 @@
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-sm font-medium text-gray-600 mb-1">Active Offers</p>
+          <p class="text-sm font-medium text-gray-600 mb-1">Ofertas Activas</p>
           <p class="text-3xl font-bold text-gray-900 tracking-tight">
             {{ activeOffers }}
           </p>
-          <p class="text-sm text-gray-500 mt-1">Currently running</p>
+          <p class="text-sm text-gray-500 mt-1">Actualmente ejecutándose</p>
         </div>
       </div>
 
-      <!-- Products with Offers -->
-      <div class="card-elevated">
-        <div class="flex items-start justify-between">
-          <div class="flex-shrink-0">
-            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-              <CubeIcon class="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-        <div class="mt-4">
-          <p class="text-sm font-medium text-gray-600 mb-1">Products with Offers</p>
-          <p class="text-3xl font-bold text-gray-900 tracking-tight">
-            {{ productsWithOffers }}
-          </p>
-          <p class="text-sm text-gray-500 mt-1">Items on discount</p>
-        </div>
-      </div>
 
       <!-- Total Savings -->
       <div class="card-elevated">
@@ -70,11 +53,11 @@
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-sm font-medium text-gray-600 mb-1">Total Savings</p>
+          <p class="text-sm font-medium text-gray-600 mb-1">Ahorros Totales</p>
           <p class="text-3xl font-bold text-gray-900 tracking-tight">
             ${{ totalSavings.toFixed(2) }}
           </p>
-          <p class="text-sm text-gray-500 mt-1">Customer savings</p>
+          <p class="text-sm text-gray-500 mt-1">Ahorros del cliente</p>
         </div>
       </div>
 
@@ -88,11 +71,11 @@
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-sm font-medium text-gray-600 mb-1">Average Discount</p>
+          <p class="text-sm font-medium text-gray-600 mb-1">Descuento Promedio</p>
           <p class="text-3xl font-bold text-gray-900 tracking-tight">
             {{ averageDiscount.toFixed(1) }}%
           </p>
-          <p class="text-sm text-gray-500 mt-1">Per offer</p>
+          <p class="text-sm text-gray-500 mt-1">Por oferta</p>
         </div>
       </div>
     </div>
@@ -102,19 +85,19 @@
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900 flex items-center">
           <FunnelIcon class="w-5 h-5 text-gray-500 mr-2" />
-          Filters & Search
+          Filtros y Búsqueda
         </h3>
-        <span class="text-sm text-gray-500">{{ filteredOffers.length }} offers found</span>
+        <span class="text-sm text-gray-500">{{ filteredOffers.length }} ofertas encontradas</span>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="form-group">
-          <label class="form-label">Search Offers</label>
+          <label class="form-label">Buscar Ofertas</label>
           <div class="relative">
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Search by name or product..."
+              placeholder="Buscar por nombre o producto..."
               class="form-input w-full pl-10"
             />
             <MagnifyingGlassIcon class="w-5 h-5 text-gray-400 absolute left-3 top-3" />

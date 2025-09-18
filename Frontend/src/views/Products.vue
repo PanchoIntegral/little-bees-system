@@ -3,14 +3,14 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div class="flex items-center">
         <CubeIcon class="w-8 h-8 text-amber-500 mr-3" />
-        <h1 class="text-3xl font-bold text-gray-900">Products</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Productos</h1>
       </div>
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="relative">
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search products..."
+            placeholder="Buscar productos..."
             class="form-input pl-10 pr-4 py-2 w-full sm:w-80"
             @input="handleSearch"
           />
@@ -25,7 +25,7 @@
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          Add Product
+          Agregar Producto
         </button>
       </div>
     </div>
@@ -33,13 +33,13 @@
     <!-- Filters -->
     <div class="card">
       <div class="flex flex-wrap gap-4 items-center">
-        <span class="text-sm font-medium text-gray-700">Filter by:</span>
+        <span class="text-sm font-medium text-gray-700">Filtrar por:</span>
         <select
           v-model="selectedCategory"
           @change="handleFilterChange"
           class="form-input w-auto"
         >
-          <option value="">All Categories</option>
+          <option value="">Todas las Categorías</option>
           <option
             v-for="category in productsStore.categories"
             :key="category"
@@ -115,7 +115,7 @@
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          Add Product
+          Agregar Producto
         </button>
       </div>
     </div>
@@ -209,7 +209,7 @@
           class="btn btn-outline text-sm"
           :class="{ 'opacity-50 cursor-not-allowed': productsStore.pagination.current_page === productsStore.pagination.total_pages }"
         >
-          Next
+          Siguiente
         </button>
       </nav>
     </div>
@@ -227,11 +227,11 @@
     <ConfirmDialog
       :show="showDeleteDialog"
       type="danger"
-      title="Delete Product"
-      :message="`Are you sure you want to delete '${productToDelete?.name}'?`"
-      details="This action cannot be undone. The product will be permanently removed from your inventory."
-      confirm-text="Delete"
-      cancel-text="Cancel"
+      title="Eliminar Producto"
+      :message="`¿Estás seguro de que quieres eliminar '${productToDelete?.name}'?`"
+      details="Esta acción no se puede deshacer. El producto será eliminado permanentemente de tu inventario."
+      confirm-text="Eliminar"
+      cancel-text="Cancelar"
       @confirm="confirmDelete"
       @cancel="cancelDelete"
     />
@@ -291,9 +291,9 @@ async function loadProducts() {
   } catch (err: any) {
     console.error('Error loading products:', err)
     error(
-      'Failed to Load Products',
-      'Could not retrieve your product inventory.',
-      err.message || 'Please refresh the page or try again later.'
+      'Error al Cargar Productos',
+      'No se pudo obtener tu inventario de productos.',
+      err.message || 'Por favor actualiza la página o inténtalo de nuevo más tarde.'
     )
   }
 }

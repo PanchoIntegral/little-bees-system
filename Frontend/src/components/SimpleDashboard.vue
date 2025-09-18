@@ -14,18 +14,6 @@
 
       <div class="flex items-center space-x-3">
         <button
-          @click="refreshData"
-          :disabled="isLoading"
-          class="btn btn-outline"
-        >
-          <svg v-if="!isLoading" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-          <div v-else class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-          {{ isLoading ? 'Actualizando...' : 'Actualizar' }}
-        </button>
-
-        <button
           @click="isEditMode = !isEditMode"
           class="btn"
           :class="isEditMode ? 'btn-secondary' : 'btn-primary'"

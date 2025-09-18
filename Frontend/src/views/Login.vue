@@ -7,9 +7,9 @@
           <Logo :size="48" :show-text="false" variant="icon" class="text-amber-500" />
         </div>
         <h1 class="text-2xl font-light text-gray-900 mb-2" style="font-family: 'Inter', -apple-system, sans-serif;">
-          Welcome back
+          Bienvenido de vuelta
         </h1>
-        <p class="text-sm text-gray-500">Sign in to Little Bee's POS</p>
+        <p class="text-sm text-gray-500">Inicia sesión en Little Bee's POS</p>
       </div>
 
       <!-- Login Form -->
@@ -23,7 +23,7 @@
               autocomplete="email"
               required
               class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
-              placeholder="Email address"
+              placeholder="Dirección de email"
             />
           </div>
 
@@ -35,7 +35,7 @@
               autocomplete="current-password"
               required
               class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200 pr-12"
-              placeholder="Password"
+              placeholder="Contraseña"
             />
             <button
               type="button"

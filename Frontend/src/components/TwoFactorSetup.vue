@@ -1,9 +1,9 @@
 <template>
   <div class="bg-white rounded-lg shadow-lg p-6">
     <div class="mb-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Two-Factor Authentication</h3>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Autenticación de Dos Factores</h3>
       <p class="text-sm text-gray-600">
-        Add an extra layer of security to your account with two-factor authentication.
+        Agrega una capa adicional de seguridad a tu cuenta con la autenticación de dos factores.
       </p>
     </div>
 
@@ -26,12 +26,12 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">
-              {{ status?.two_factor_enabled ? 'Enabled' : 'Disabled' }}
+              {{ status?.two_factor_enabled ? 'Activado' : 'Desactivado' }}
             </p>
             <p class="text-sm text-gray-500">
               {{ status?.two_factor_enabled
-                ? `${status.backup_codes_count} backup codes remaining`
-                : 'Two-factor authentication is not enabled'
+                ? `${status.backup_codes_count} códigos de respaldo restantes`
+                : 'La autenticación de dos factores no está activada'
               }}
             </p>
           </div>
@@ -43,7 +43,7 @@
             :disabled="isLoading"
             class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            Enable 2FA
+            Activar 2FA
           </button>
           <template v-else>
             <button
@@ -51,7 +51,7 @@
               :disabled="isLoading"
               class="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
             >
-              Disable
+              Desactivar
             </button>
           </template>
         </div>
@@ -62,9 +62,9 @@
     <div v-if="showSetup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div class="mb-4">
-          <h4 class="text-lg font-medium text-gray-900 mb-2">Set up Two-Factor Authentication</h4>
+          <h4 class="text-lg font-medium text-gray-900 mb-2">Configurar Autenticación de Dos Factores</h4>
           <p class="text-sm text-gray-600">
-            Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
+            Escanea este código QR con tu aplicación autenticadora (Google Authenticator, Authy, etc.)
           </p>
         </div>
 
@@ -75,7 +75,7 @@
           </div>
 
           <div v-if="backupCodes && backupCodes.length > 0" class="space-y-2">
-            <p class="text-sm font-medium text-gray-900">Backup Codes:</p>
+            <p class="text-sm font-medium text-gray-900">Códigos de Respaldo:</p>
             <div class="bg-gray-50 p-4 rounded-lg">
               <div class="grid grid-cols-2 gap-2 text-sm font-mono">
                 <div v-for="code in backupCodes" :key="code" class="text-gray-800">
@@ -84,7 +84,7 @@
               </div>
             </div>
             <p class="text-xs text-gray-500">
-              Save these backup codes in a secure location. You can use them to access your account if you lose your authenticator device.
+              Guarda estos códigos de respaldo en un lugar seguro. Puedes usarlos para acceder a tu cuenta si pierdes tu dispositivo autenticador.
             </p>
           </div>
 
@@ -93,13 +93,13 @@
               @click="cancelSetup"
               class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               @click="setupStep = 2"
               class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Next
+              Siguiente
             </button>
           </div>
         </div>
@@ -108,7 +108,7 @@
         <div v-if="setupStep === 2" class="space-y-4">
           <div>
             <label for="verificationCode" class="block text-sm font-medium text-gray-700 mb-2">
-              Enter verification code from your authenticator app:
+              Ingresa el código de verificación de tu aplicación autenticadora:
             </label>
             <input
               id="verificationCode"
@@ -131,20 +131,20 @@
               @click="setupStep = 1"
               class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
-              Back
+              Atrás
             </button>
             <button
               @click="enableTwoFactor"
               :disabled="isLoading || verificationCode.length !== 6"
               class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span v-if="!isLoading">Enable 2FA</span>
+              <span v-if="!isLoading">Activar 2FA</span>
               <span v-else class="flex items-center justify-center">
                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Enabling...
+                Activando...
               </span>
             </button>
           </div>
@@ -198,7 +198,7 @@
               @click="cancelRegenerate"
               class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               @click="regenerateBackupCodes"
@@ -217,9 +217,9 @@
     <div v-if="showDisableConfirm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div class="mb-4">
-          <h4 class="text-lg font-medium text-gray-900 mb-2">Disable Two-Factor Authentication</h4>
+          <h4 class="text-lg font-medium text-gray-900 mb-2">Desactivar Autenticación de Dos Factores</h4>
           <p class="text-sm text-gray-600">
-            Enter your authenticator code to disable two-factor authentication.
+            Ingresa tu código de autenticación para desactivar la autenticación de dos factores.
           </p>
         </div>
 
@@ -245,15 +245,15 @@
               @click="cancelDisable"
               class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               @click="disableTwoFactor"
               :disabled="isLoading || disableCode.length !== 6"
               class="flex-1 bg-red-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span v-if="!isLoading">Disable 2FA</span>
-              <span v-else>Disabling...</span>
+              <span v-if="!isLoading">Desactivar 2FA</span>
+              <span v-else>Desactivando...</span>
             </button>
           </div>
         </div>
