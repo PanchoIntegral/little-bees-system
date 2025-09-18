@@ -50,16 +50,6 @@
             ></textarea>
           </div>
 
-          <!-- Product Information -->
-          <div class="bg-blue-50 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Cómo funcionan las ofertas?</h3>
-            <div class="space-y-2 text-sm text-gray-700">
-              <p>• Las ofertas se aplican <strong>automáticamente</strong> durante las ventas</p>
-              <p>• Se basan en el <strong>monto mínimo</strong> de compra que especifiques abajo</p>
-              <p>• El vendedor podrá seleccionar qué ofertas aplicar a cada producto en la venta</p>
-              <p>• Solo se pueden aplicar ofertas que cumplan el monto mínimo</p>
-            </div>
-          </div>
 
           <!-- Offer Configuration Based on Type -->
           <div v-if="form.discount_type" class="bg-gray-50 p-6 rounded-lg">
@@ -122,31 +112,6 @@
 
           </div>
 
-          <!-- Date Range -->
-          <div class="bg-blue-50 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Vigencia del Descuento (Opcional)</h3>
-            <p class="text-sm text-gray-600 mb-4">Si no especificas fechas, el descuento estará activo indefinidamente</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio</label>
-                <input
-                  v-model="form.start_date"
-                  type="date"
-                  class="form-input w-full"
-                />
-                <p class="text-xs text-gray-500 mt-1">Dejar vacío = activo desde ahora</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin</label>
-                <input
-                  v-model="form.end_date"
-                  type="date"
-                  class="form-input w-full"
-                />
-                <p class="text-xs text-gray-500 mt-1">Dejar vacío = sin fecha límite</p>
-              </div>
-            </div>
-          </div>
 
           <!-- Additional Conditions -->
           <div class="bg-yellow-50 p-6 rounded-lg">
@@ -220,12 +185,6 @@
               <div class="flex justify-between">
                 <span class="text-gray-700">Compra mínima:</span>
                 <span class="font-medium">${{ form.minimum_purchase || 0 }}</span>
-              </div>
-              <div v-if="form.start_date || form.end_date" class="flex justify-between">
-                <span class="text-gray-700">Vigencia:</span>
-                <span class="font-medium">
-                  {{ form.start_date || 'Desde ahora' }} - {{ form.end_date || 'Sin límite' }}
-                </span>
               </div>
             </div>
           </div>

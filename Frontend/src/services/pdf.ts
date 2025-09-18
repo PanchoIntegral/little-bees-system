@@ -23,8 +23,8 @@ export class PDFService {
       sale,
       companyInfo: {
         name: "Little Bee's Candle Co.",
-        address: "123 Candle Street, Wax City, WC 12345",
-        phone: "(555) 123-4567",
+        address: "1234 Calle Rio Sonora 400, Mexicali, Baja California",
+        phone: "(646) 137-5992",
         email: "info@littlebeescandles.com",
         // Ruta del logo oficial exigido. Coloca el archivo en Frontend/public/logo-little-bees.png
         // o actualiza esta ruta para apuntar al archivo definitivo.

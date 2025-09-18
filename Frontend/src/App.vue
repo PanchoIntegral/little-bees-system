@@ -53,7 +53,7 @@
               <!-- User Info with Dropdown -->
               <div ref="userMenuRef" class="relative">
                 <button
-                  @click.stop="showUserMenu = !showUserMenu"
+                  @click.stop="toggleUserMenu"
                   class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200"
                 >
                   <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
@@ -68,15 +68,16 @@
                 </button>
 
                 <!-- Dropdown Menu -->
-                <transition
-                  enter-active-class="transition ease-out duration-100"
-                  enter-from-class="transform opacity-0 scale-95"
-                  enter-to-class="transform opacity-100 scale-100"
-                  leave-active-class="transition ease-in duration-75"
-                  leave-from-class="transform opacity-100 scale-100"
-                  leave-to-class="transform opacity-0 scale-95"
-                >
-                  <div v-if="showUserMenu" @click.stop class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50 origin-top-right">
+                <teleport to="body">
+                  <transition
+                    enter-active-class="transition ease-out duration-100"
+                    enter-from-class="transform opacity-0 scale-95"
+                    enter-to-class="transform opacity-100 scale-100"
+                    leave-active-class="transition ease-in duration-75"
+                    leave-from-class="transform opacity-100 scale-100"
+                    leave-to-class="transform opacity-0 scale-95"
+                  >
+                    <div v-if="showUserMenu" @click.stop class="fixed bg-white rounded-lg shadow-2xl border border-gray-200 py-1 w-48" :style="dropdownStyle">
                   <RouterLink
                     to="/settings"
                     @click="showUserMenu = false"
@@ -111,8 +112,9 @@
                     </svg>
                     Cerrar Sesión
                   </button>
-                  </div>
-                </transition>
+                    </div>
+                  </transition>
+                </teleport>
               </div>
             </div>
           </div>
@@ -147,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import Logo from './components/Logo.vue'
 import NotificationContainer from './components/NotificationContainer.vue'
@@ -158,6 +160,7 @@ import { authService } from './services/auth'
 const currentUser = computed(() => authService.currentUser.value)
 const showUserMenu = ref(false)
 const userMenuRef = ref<HTMLElement | null>(null)
+const dropdownStyle = ref('')
 
 // Logout functionality
 const {
@@ -173,6 +176,23 @@ const handleLogoutClick = () => {
   showLogoutDialog()
 }
 
+const updateDropdownPosition = () => {
+  if (userMenuRef.value && showUserMenu.value) {
+    const rect = userMenuRef.value.getBoundingClientRect()
+    dropdownStyle.value = `top: ${rect.bottom + 8}px; right: ${window.innerWidth - rect.right}px; z-index: 99999;`
+  }
+}
+
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value
+  if (showUserMenu.value) {
+    nextTick(() => {
+      updateDropdownPosition()
+    })
+  }
+}
+
+
 // Close user menu when clicking outside
 const closeUserMenu = (event: Event) => {
   const target = event.target as HTMLElement
@@ -185,9 +205,13 @@ const closeUserMenu = (event: Event) => {
 
 onMounted(() => {
   document.addEventListener('click', closeUserMenu)
+  window.addEventListener('resize', updateDropdownPosition)
+  window.addEventListener('scroll', updateDropdownPosition)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeUserMenu)
+  window.removeEventListener('resize', updateDropdownPosition)
+  window.removeEventListener('scroll', updateDropdownPosition)
 })
 </script>
