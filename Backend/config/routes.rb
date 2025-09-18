@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     # Authentication routes
     post '/auth/login', to: 'auth#login'
     post '/auth/logout', to: 'auth#logout'
+    post '/auth/register', to: 'auth#register'
     post '/auth/verify_two_factor', to: 'auth#verify_two_factor'
     post '/auth/request_sms_code', to: 'auth#request_sms_code'
     post '/auth/change_password', to: 'auth#change_password'

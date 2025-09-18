@@ -4,7 +4,12 @@
       <!-- Logo Section -->
       <div class="text-center mb-12">
         <div class="inline-flex items-center justify-center mb-6">
-          <Logo :size="48" :show-text="false" variant="icon" class="text-amber-500" />
+          <img
+            src="/logo.svg"
+            alt="Little Bee's Candle Co."
+            class="h-16 md:h-20 object-contain drop-shadow-sm"
+            style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));"
+          />
         </div>
         <h1 class="text-2xl font-light text-gray-900 mb-2" style="font-family: 'Inter', -apple-system, sans-serif;">
           Bienvenido de vuelta
@@ -82,6 +87,20 @@
             Signing in...
           </div>
         </button>
+
+        <!-- Create Account Link -->
+        <div class="text-center mt-6">
+          <p class="text-sm text-gray-600">
+            ¿Necesitas crear una cuenta de empleado?
+          </p>
+          <button
+            type="button"
+            @click="showCreateAccount = true"
+            class="mt-2 text-amber-600 hover:text-amber-700 font-medium text-sm transition-colors"
+          >
+            Crear nueva cuenta de empleado
+          </button>
+        </div>
       </form>
 
       <!-- Two-Factor Authentication Form -->
@@ -266,6 +285,167 @@
         </button>
       </form>
 
+      <!-- Create Employee Account Form -->
+      <form v-if="showCreateAccount" @submit.prevent="handleCreateAccount" class="space-y-6">
+        <div class="text-center mb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-2">Crear Cuenta de Empleado</h2>
+          <p class="text-sm text-gray-600">Complete la información para crear una nueva cuenta</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <input
+                id="firstName"
+                v-model="createForm.firstName"
+                type="text"
+                required
+                class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
+                placeholder="Nombre"
+              />
+            </div>
+            <div>
+              <input
+                id="lastName"
+                v-model="createForm.lastName"
+                type="text"
+                required
+                class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
+                placeholder="Apellido"
+              />
+            </div>
+          </div>
+
+          <div>
+            <input
+              id="createEmail"
+              v-model="createForm.email"
+              type="email"
+              required
+              class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
+              placeholder="Dirección de email"
+            />
+          </div>
+
+          <div>
+            <input
+              id="createPhone"
+              v-model="createForm.phone"
+              type="tel"
+              class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
+              placeholder="Teléfono (opcional)"
+            />
+          </div>
+
+          <div>
+            <select
+              id="createRole"
+              v-model="createForm.role"
+              required
+              class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
+            >
+              <option value="">Seleccionar rol</option>
+              <option value="employee">Empleado</option>
+              <option value="manager">Manager</option>
+            </select>
+          </div>
+
+          <div class="relative">
+            <input
+              id="createPassword"
+              v-model="createForm.password"
+              :type="showCreatePassword ? 'text' : 'password'"
+              required
+              class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200 pr-12"
+              placeholder="Contraseña"
+            />
+            <button
+              type="button"
+              @click="showCreatePassword = !showCreatePassword"
+              class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg v-if="showCreatePassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+              </svg>
+              <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="relative">
+            <input
+              id="confirmPassword"
+              v-model="createForm.confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              required
+              class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200 pr-12"
+              placeholder="Confirmar contraseña"
+            />
+            <button
+              type="button"
+              @click="showConfirmPassword = !showConfirmPassword"
+              class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg v-if="showConfirmPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+              </svg>
+              <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="text-xs text-gray-500 space-y-1">
+            <p>La contraseña debe incluir:</p>
+            <ul class="list-disc list-inside space-y-1 ml-2">
+              <li>Al menos 8 caracteres</li>
+              <li>Una letra mayúscula</li>
+              <li>Una letra minúscula</li>
+              <li>Un número</li>
+              <li>Un carácter especial (@$!%*?&)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Error/Success Message -->
+        <div v-if="createForm.message" :class="[
+          'p-3 border rounded-lg',
+          createForm.isSuccess ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+        ]">
+          <p :class="[
+            'text-sm text-center',
+            createForm.isSuccess ? 'text-green-600' : 'text-red-600'
+          ]">{{ createForm.message }}</p>
+        </div>
+
+        <div class="flex space-x-3">
+          <button
+            type="button"
+            @click="backToLogin"
+            class="flex-1 bg-gray-100 text-gray-700 py-4 px-4 rounded-xl font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+          >
+            Volver
+          </button>
+          <button
+            type="submit"
+            :disabled="isCreatingAccount || !isCreateFormValid"
+            class="flex-1 bg-gray-900 text-white py-4 px-4 rounded-xl font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="!isCreatingAccount">Crear Cuenta</span>
+            <div v-else class="flex items-center justify-center">
+              <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creando...
+            </div>
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
 </template>
@@ -273,7 +453,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import Logo from '../components/Logo.vue'
+// Usamos una imagen con fondo transparente ubicada en /public/logo.png
 import { authService } from '../services/auth'
 
 const router = useRouter()
@@ -298,10 +478,42 @@ const newPassword = ref('')
 const showCurrentPassword = ref(false)
 const showNewPassword = ref(false)
 
+// Create Account
+const showCreateAccount = ref(false)
+const isCreatingAccount = ref(false)
+const showCreatePassword = ref(false)
+const showConfirmPassword = ref(false)
+const createForm = ref({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  role: '',
+  password: '',
+  confirmPassword: '',
+  message: '',
+  isSuccess: false
+})
+
 // Computed property for password validation
 const isValidPassword = computed(() => {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
   return passwordRegex.test(newPassword.value)
+})
+
+// Computed property for create form validation
+const isCreateFormValid = computed(() => {
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  return (
+    createForm.value.firstName.trim() &&
+    createForm.value.lastName.trim() &&
+    createForm.value.email.trim() &&
+    createForm.value.role &&
+    createForm.value.password &&
+    createForm.value.confirmPassword &&
+    createForm.value.password === createForm.value.confirmPassword &&
+    passwordRegex.test(createForm.value.password)
+  )
 })
 
 const handleLogin = async () => {
@@ -460,9 +672,77 @@ const requestSmsCode = async () => {
   }
 }
 
+const handleCreateAccount = async () => {
+  if (!isCreateFormValid.value) {
+    createForm.value.message = 'Por favor complete todos los campos correctamente'
+    createForm.value.isSuccess = false
+    return
+  }
+
+  if (createForm.value.password !== createForm.value.confirmPassword) {
+    createForm.value.message = 'Las contraseñas no coinciden'
+    createForm.value.isSuccess = false
+    return
+  }
+
+  isCreatingAccount.value = true
+  createForm.value.message = ''
+
+  try {
+    const response = await fetch('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        first_name: createForm.value.firstName,
+        last_name: createForm.value.lastName,
+        email: createForm.value.email,
+        phone: createForm.value.phone || null,
+        role: createForm.value.role,
+        password: createForm.value.password,
+        password_confirmation: createForm.value.confirmPassword
+      })
+    })
+
+    const result = await response.json()
+
+    if (result.success) {
+      createForm.value.message = 'Cuenta creada exitosamente. Ya puedes iniciar sesión.'
+      createForm.value.isSuccess = true
+
+      // Reset form
+      Object.assign(createForm.value, {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        role: '',
+        password: '',
+        confirmPassword: ''
+      })
+
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        backToLogin()
+      }, 2000)
+    } else {
+      createForm.value.message = result.message || 'Error al crear la cuenta'
+      createForm.value.isSuccess = false
+    }
+  } catch (error) {
+    console.error('Create account error:', error)
+    createForm.value.message = 'Error de conexión. Intente nuevamente.'
+    createForm.value.isSuccess = false
+  } finally {
+    isCreatingAccount.value = false
+  }
+}
+
 const backToLogin = () => {
   showTwoFactor.value = false
   showPasswordChange.value = false
+  showCreateAccount.value = false
   twoFactorCode.value = ''
   currentPassword.value = ''
   newPassword.value = ''
@@ -470,5 +750,20 @@ const backToLogin = () => {
   verificationMethods.value = []
   selectedMethod.value = 'totp'
   errorMessage.value = ''
+
+  // Reset create form
+  Object.assign(createForm.value, {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: '',
+    password: '',
+    confirmPassword: '',
+    message: '',
+    isSuccess: false
+  })
+  showCreatePassword.value = false
+  showConfirmPassword.value = false
 }
 </script>

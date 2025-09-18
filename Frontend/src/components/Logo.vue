@@ -23,7 +23,7 @@
               fill="currentColor"/>
       </svg>
 
-      <!-- Bee Icon -->
+      <!-- Bee Icon (matching login design) -->
       <svg
         :width="iconSize"
         :height="iconSize"
@@ -33,15 +33,26 @@
         stroke-width="1.5"
         class="relative z-10 text-white"
       >
-        <!-- Stylized Bee Body -->
-        <ellipse cx="12" cy="12" rx="3" ry="6" transform="rotate(25 12 12)"/>
-        <!-- Bee Stripes -->
-        <path d="M10.5 9.5h3M10 12h4M10.5 14.5h3" stroke-linecap="round"/>
-        <!-- Bee Wings -->
-        <path d="M8 8c-1.5-1.5-3-1-3 0s1.5 1.5 3 0zM16 8c1.5-1.5 3-1 3 0s-1.5 1.5-3 0z"
-              fill="currentColor" opacity="0.7"/>
-        <path d="M8.5 10c-1-1-2.5-0.5-2.5 0.5s1.5 1.5 2.5 0.5zM15.5 10c1-1 2.5-0.5 2.5 0.5s-1.5 1.5-2.5 0.5z"
-              fill="currentColor" opacity="0.5"/>
+        <!-- Bee Body (black outline) -->
+        <ellipse cx="12" cy="12" rx="3" ry="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        
+        <!-- Bee Head -->
+        <circle cx="12" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        
+        <!-- Antennae -->
+        <path d="M10 5 L9 3 M14 5 L15 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        
+        <!-- Bee Wings (heart-shaped) -->
+        <path d="M9 7 C8 6, 6 7, 6 8 C6 9, 8 10, 9 9 C10 10, 12 9, 12 8 C12 7, 10 6, 9 7 Z" 
+              fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M15 7 C16 6, 18 7, 18 8 C18 9, 16 10, 15 9 C14 10, 12 9, 12 8 C12 7, 14 6, 15 7 Z" 
+              fill="none" stroke="currentColor" stroke-width="1.5"/>
+        
+        <!-- Bee Stripes (yellow and black) -->
+        <rect x="10" y="9" width="4" height="1.5" fill="#FFD700" stroke="currentColor" stroke-width="0.5"/>
+        <rect x="10" y="11" width="4" height="1.5" fill="currentColor"/>
+        <rect x="10" y="13" width="4" height="1.5" fill="#FFD700" stroke="currentColor" stroke-width="0.5"/>
+        <rect x="10" y="15" width="4" height="1.5" fill="currentColor"/>
       </svg>
     </div>
 

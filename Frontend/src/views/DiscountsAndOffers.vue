@@ -204,20 +204,6 @@
 
                 <p class="text-gray-600 mb-3">{{ offer.description }}</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span class="font-medium text-gray-700">Producto:</span>
-                    <span class="text-gray-600 ml-1">{{ offer.product?.name || 'N/A' }}</span>
-                  </div>
-                  <div>
-                    <span class="font-medium text-gray-700">Descuento:</span>
-                    <span class="text-gray-600 ml-1">{{ formatDiscount(offer) }}</span>
-                  </div>
-                  <div>
-                    <span class="font-medium text-gray-700">Vigencia:</span>
-                    <span class="text-gray-600 ml-1">{{ formatDateRange(offer) }}</span>
-                  </div>
-                </div>
               </div>
 
               <div class="flex items-center space-x-2 ml-4">

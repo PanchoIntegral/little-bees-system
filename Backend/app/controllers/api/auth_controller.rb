@@ -183,6 +183,41 @@ class Api::AuthController < Api::BaseController
     end
   end
 
+  def register
+    # Only allow employee and manager registration
+    unless ['employee', 'manager'].include?(params[:role])
+      render json: {
+        success: false,
+        message: 'Invalid role. Only employee and manager roles are allowed.'
+      }, status: :unprocessable_entity
+      return
+    end
+
+    user = User.new(user_registration_params)
+    user.confirmed_at = Time.current # Auto-confirm employee accounts
+
+    if user.save
+      render json: {
+        success: true,
+        message: 'Employee account created successfully',
+        user: {
+          id: user.id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          full_name: user.full_name,
+          role: user.role
+        }
+      }, status: :created
+    else
+      render json: {
+        success: false,
+        message: 'Failed to create account',
+        errors: user.errors.full_messages
+      }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def complete_login(user)
@@ -241,5 +276,9 @@ class Api::AuthController < Api::BaseController
     end
 
     Rails.cache.write(key, attempts + 1, expires_in: 15.minutes)
+  end
+
+  def user_registration_params
+    params.permit(:first_name, :last_name, :email, :phone, :role, :password, :password_confirmation)
   end
 end

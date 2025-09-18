@@ -1,0 +1,33 @@
+<svg width="200" height="120" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bee Icon -->
+  <g transform="translate(100, 30)">
+    <!-- Bee Body (black outline) -->
+    <ellipse cx="0" cy="0" rx="12" ry="18" fill="none" stroke="black" stroke-width="3"/>
+    
+    <!-- Bee Head -->
+    <circle cx="0" cy="-12" r="8" fill="none" stroke="black" stroke-width="3"/>
+    
+    <!-- Antennae -->
+    <path d="M-8 -18 L-10 -22 M8 -18 L10 -22" stroke="black" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Bee Wings (heart-shaped) -->
+    <path d="M-15 -5 C-18 -8, -22 -5, -22 -2 C-22 2, -18 6, -15 2 C-12 6, -8 2, -8 -2 C-8 -5, -12 -8, -15 -5 Z" 
+          fill="none" stroke="black" stroke-width="3"/>
+    <path d="M15 -5 C18 -8, 22 -5, 22 -2 C22 2, 18 6, 15 2 C12 6, 8 2, 8 -2 C8 -5, 12 -8, 15 -5 Z" 
+          fill="none" stroke="black" stroke-width="3"/>
+    
+    <!-- Bee Stripes (yellow and black) -->
+    <rect x="-8" y="-3" width="16" height="4" fill="#FCD34D" stroke="black" stroke-width="1"/>
+    <rect x="-8" y="2" width="16" height="4" fill="black"/>
+    <rect x="-8" y="7" width="16" height="4" fill="#FCD34D" stroke="black" stroke-width="1"/>
+    <rect x="-8" y="12" width="16" height="4" fill="black"/>
+  </g>
+
+  <!-- ESTD and 2019 -->
+  <text x="70" y="70" font-family="serif" font-size="12" fill="black" text-anchor="middle">ESTD</text>
+  <text x="130" y="70" font-family="serif" font-size="12" fill="black" text-anchor="middle">2019</text>
+
+  <!-- Main Text -->
+  <text x="100" y="90" font-family="serif" font-size="20" font-weight="bold" fill="black" text-anchor="middle">LITTLE BEE'S</text>
+  <text x="100" y="110" font-family="serif" font-size="16" fill="black" text-anchor="middle">CANDLE CO.</text>
+</svg>
