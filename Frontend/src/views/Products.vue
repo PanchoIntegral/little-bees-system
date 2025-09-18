@@ -19,6 +19,7 @@
           </svg>
         </div>
         <button
+          v-if="canManageProducts"
           @click="showCreateModal = true"
           class="btn btn-primary"
         >
@@ -107,7 +108,7 @@
       </svg>
       <h3 class="mt-2 text-sm font-medium text-gray-900">No products found</h3>
       <p class="mt-1 text-sm text-gray-500">Get started by creating a new product.</p>
-      <div class="mt-6">
+      <div v-if="canManageProducts" class="mt-6">
         <button
           @click="showCreateModal = true"
           class="btn btn-primary"
@@ -155,7 +156,7 @@
           </span>
           <span class="text-sm text-gray-500">SKU: {{ product.sku }}</span>
         </div>
-        <div class="flex gap-2">
+        <div v-if="canManageProducts" class="flex gap-2">
           <button
             @click="editProduct(product)"
             class="btn btn-secondary flex-1 text-sm py-1.5"
@@ -174,6 +175,9 @@
             </svg>
             Delete
           </button>
+        </div>
+        <div v-else class="text-center text-sm text-gray-500 py-2">
+          Solo ver productos
         </div>
       </div>
     </div>
@@ -243,12 +247,20 @@ import { ref, computed, onMounted } from 'vue'
 import { CubeIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useProductsStore } from '../stores/products'
 import { useNotifications } from '../composables/useNotifications'
+import { authService } from '../services/auth'
 import type { Product, ProductFilters } from '../services/products'
 import ProductModal from '../components/ProductModal.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 const productsStore = useProductsStore()
 const { success, error, warning } = useNotifications()
+
+// User permissions
+const currentUser = computed(() => authService.getUser())
+const canManageProducts = computed(() => {
+  const user = currentUser.value
+  return user && (user.role === 'admin' || user.role === 'manager')
+})
 
 // Reactive state
 const searchQuery = ref('')

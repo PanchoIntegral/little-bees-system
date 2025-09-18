@@ -18,7 +18,16 @@
       </div>
 
       <!-- Login Form -->
-      <form v-if="!showTwoFactor && !showPasswordChange" @submit.prevent="handleLogin" class="space-y-6">
+      <Transition
+        name="slide-fade"
+        enter-active-class="transition-all duration-500 ease-out"
+        leave-active-class="transition-all duration-300 ease-in"
+        enter-from-class="transform translate-y-8 opacity-0 scale-95"
+        enter-to-class="transform translate-y-0 opacity-100 scale-100"
+        leave-from-class="transform translate-y-0 opacity-100 scale-100"
+        leave-to-class="transform translate-y-8 opacity-0 scale-95"
+      >
+        <form v-if="!showTwoFactor && !showPasswordChange && !showCreateAccount" @submit.prevent="handleLogin" class="space-y-6">
         <div class="space-y-4">
           <div>
             <input
@@ -101,7 +110,8 @@
             Crear nueva cuenta de empleado
           </button>
         </div>
-      </form>
+        </form>
+      </Transition>
 
       <!-- Two-Factor Authentication Form -->
       <form v-if="showTwoFactor" @submit.prevent="handleTwoFactor" class="space-y-6">
@@ -286,31 +296,54 @@
       </form>
 
       <!-- Create Employee Account Form -->
-      <form v-if="showCreateAccount" @submit.prevent="handleCreateAccount" class="space-y-6">
+      <Transition
+        name="slide-fade"
+        enter-active-class="transition-all duration-500 ease-out"
+        leave-active-class="transition-all duration-300 ease-in"
+        enter-from-class="transform translate-y-8 opacity-0 scale-95"
+        enter-to-class="transform translate-y-0 opacity-100 scale-100"
+        leave-from-class="transform translate-y-0 opacity-100 scale-100"
+        leave-to-class="transform translate-y-8 opacity-0 scale-95"
+      >
+        <form v-if="showCreateAccount" @submit.prevent="handleCreateAccount" class="space-y-6 form-container">
         <div class="text-center mb-6">
-          <h2 class="text-lg font-medium text-gray-900 mb-2">Crear Cuenta de Empleado</h2>
-          <p class="text-sm text-gray-600">Complete la información para crear una nueva cuenta</p>
+          <div class="flex items-center justify-center mb-4">
+            <button
+              type="button"
+              @click="backToLogin"
+              class="flex items-center text-gray-500 hover:text-gray-700 transition-colors mr-4"
+            >
+              <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              Volver
+            </button>
+            <div class="flex-1 text-center">
+              <h2 class="text-lg font-medium text-gray-900 mb-2">✨ Crear Cuenta de Empleado</h2>
+              <p class="text-sm text-gray-600">Complete la información para crear una nueva cuenta</p>
+            </div>
+          </div>
         </div>
 
         <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
+          <div class="grid grid-cols-2 gap-3 animate-slide-in-stagger">
+            <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
               <input
                 id="firstName"
                 v-model="createForm.firstName"
                 type="text"
                 required
-                class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
+                class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200 transform hover:scale-[1.02]"
                 placeholder="Nombre"
               />
             </div>
-            <div>
+            <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
               <input
                 id="lastName"
                 v-model="createForm.lastName"
                 type="text"
                 required
-                class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200"
+                class="w-full px-4 py-4 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-100 focus:outline-none transition-all duration-200 transform hover:scale-[1.02]"
                 placeholder="Apellido"
               />
             </div>
@@ -432,7 +465,7 @@
           <button
             type="submit"
             :disabled="isCreatingAccount || !isCreateFormValid"
-            class="flex-1 bg-gray-900 text-white py-4 px-4 rounded-xl font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 btn-create-glow text-white py-4 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span v-if="!isCreatingAccount">Crear Cuenta</span>
             <div v-else class="flex items-center justify-center">
@@ -444,7 +477,8 @@
             </div>
           </button>
         </div>
-      </form>
+        </form>
+      </Transition>
 
     </div>
   </div>
@@ -767,3 +801,84 @@ const backToLogin = () => {
   showConfirmPassword.value = false
 }
 </script>
+
+<style scoped>
+/* Animaciones personalizadas */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Efecto de brillo en el botón de crear cuenta */
+.btn-create-glow {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  box-shadow: 0 4px 15px 0 rgba(75, 85, 99, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-create-glow:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+  box-shadow: 0 6px 20px 0 rgba(75, 85, 99, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Mejora visual para inputs */
+.input-enhanced {
+  background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.input-enhanced:focus {
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(252, 211, 77, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación para el contenedor del formulario */
+.form-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.form-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(252, 211, 77, 0.03), transparent);
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+/* Transición suave para pestañas */
+.tab-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-transition:hover {
+  transform: translateY(-1px);
+}
+</style>

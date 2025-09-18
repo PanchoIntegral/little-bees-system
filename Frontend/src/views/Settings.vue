@@ -309,13 +309,23 @@
                   @click="toggleEmployeeStatus(employee)"
                   :class="[
                     'p-2 transition-colors',
-                    employee.active ? 'text-red-600 hover:text-red-700' : 'text-green-600 hover:text-green-700'
+                    employee.active ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'
                   ]"
                   :title="employee.active ? 'Desactivar empleado' : 'Activar empleado'"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path v-if="employee.active" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
                     <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </button>
+                <button
+                  v-if="employee.id !== user?.id"
+                  @click="confirmDeleteEmployee(employee)"
+                  class="p-2 text-red-600 hover:text-red-700 transition-colors"
+                  title="Eliminar empleado"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                   </svg>
                 </button>
               </div>
@@ -420,6 +430,27 @@
       @cancel="cancelLogout"
       @confirm="confirmLogout"
     />
+
+    <!-- Employee Edit Modal -->
+    <EmployeeEditModal
+      :show="showEditModal"
+      :employee="editingEmployee"
+      :is-loading="isUpdatingEmployee"
+      @cancel="cancelEditEmployee"
+      @save="saveEmployee"
+    />
+
+    <!-- Delete Employee Confirmation -->
+    <ConfirmDialog
+      :show="showDeleteDialog"
+      title="Eliminar Empleado"
+      :message="`¿Estás seguro de que quieres eliminar a '${employeeToDelete?.full_name}'?`"
+      details="Esta acción no se puede deshacer. El empleado perderá acceso al sistema permanentemente."
+      confirm-text="Eliminar"
+      cancel-text="Cancelar"
+      @confirm="deleteEmployee"
+      @cancel="cancelDeleteEmployee"
+    />
   </div>
 </template>
 
@@ -429,6 +460,8 @@ import { authService } from '../services/auth'
 import { useLogout } from '../composables/useLogout'
 import TwoFactorSetup from '../components/TwoFactorSetup.vue'
 import LogoutModal from '../components/LogoutModal.vue'
+import EmployeeEditModal from '../components/EmployeeEditModal.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 // User data
 const user = computed(() => authService.getUser())
@@ -481,6 +514,11 @@ const employees = ref([])
 const isLoadingEmployees = ref(false)
 const employeeSearch = ref('')
 const roleFilter = ref('')
+const showEditModal = ref(false)
+const editingEmployee = ref(null)
+const isUpdatingEmployee = ref(false)
+const showDeleteDialog = ref(false)
+const employeeToDelete = ref(null)
 
 // Logout functionality
 const {
@@ -625,8 +663,88 @@ const refreshEmployees = () => {
 }
 
 const editEmployee = (employee) => {
-  // TODO: Implement employee editing modal
-  console.log('Edit employee:', employee)
+  editingEmployee.value = employee
+  showEditModal.value = true
+}
+
+const cancelEditEmployee = () => {
+  showEditModal.value = false
+  editingEmployee.value = null
+  isUpdatingEmployee.value = false
+}
+
+const saveEmployee = async (updateData) => {
+  if (!editingEmployee.value) return
+
+  isUpdatingEmployee.value = true
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/v1/users/${editingEmployee.value.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${authService.getToken()}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updateData)
+    })
+
+    const result = await response.json()
+
+    if (result.success) {
+      // Update the employee in the local list
+      const index = employees.value.findIndex(emp => emp.id === editingEmployee.value.id)
+      if (index !== -1) {
+        employees.value[index] = { ...employees.value[index], ...result.user }
+      }
+
+      showEditModal.value = false
+      editingEmployee.value = null
+    } else {
+      console.error('Failed to update employee:', result.message)
+    }
+  } catch (error) {
+    console.error('Error updating employee:', error)
+  } finally {
+    isUpdatingEmployee.value = false
+  }
+}
+
+const confirmDeleteEmployee = (employee) => {
+  employeeToDelete.value = employee
+  showDeleteDialog.value = true
+}
+
+const deleteEmployee = async () => {
+  if (!employeeToDelete.value) return
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/v1/users/${employeeToDelete.value.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${authService.getToken()}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const result = await response.json()
+
+    if (result.success) {
+      // Remove the employee from the local list
+      employees.value = employees.value.filter(emp => emp.id !== employeeToDelete.value.id)
+    } else {
+      console.error('Failed to delete employee:', result.message)
+    }
+  } catch (error) {
+    console.error('Error deleting employee:', error)
+  } finally {
+    showDeleteDialog.value = false
+    employeeToDelete.value = null
+  }
+}
+
+const cancelDeleteEmployee = () => {
+  showDeleteDialog.value = false
+  employeeToDelete.value = null
 }
 
 const toggleEmployeeStatus = async (employee) => {
