@@ -1,7 +1,15 @@
 <template>
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <h1 class="text-3xl font-bold text-gray-900">💰 Sales</h1>
+      <div class="flex items-center">
+        <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+          <CurrencyDollarIcon class="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Sales</h1>
+          <p class="text-gray-600 text-sm mt-1">Manage and track all your sales transactions</p>
+        </div>
+      </div>
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="relative">
           <input
@@ -56,45 +64,152 @@
     </div>
 
     <!-- Filters -->
-    <div class="card">
-      <div class="flex flex-wrap gap-4 items-center">
-        <span class="text-sm font-medium text-gray-700">Filter by:</span>
-        <select 
-          v-model="selectedStatus"
-          @change="handleFilterChange"
-          class="form-input w-auto"
-        >
-          <option value="">All Status</option>
-          <option value="completed">Completed</option>
-          <option value="pending">Pending</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        <select 
-          v-model="selectedPaymentMethod"
-          @change="handleFilterChange"
-          class="form-input w-auto"
-        >
-          <option value="">All Payment Methods</option>
-          <option value="cash">Cash</option>
-          <option value="credit_card">Credit Card</option>
-          <option value="debit_card">Debit Card</option>
-          <option value="digital_wallet">Digital Wallet</option>
-        </select>
-        <input 
-          v-model="selectedDate"
-          @change="handleFilterChange"
-          type="date" 
-          class="form-input w-auto" 
-        />
-        <button 
-          @click="resetFilters"
-          class="btn btn-outline"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-          Reset
-        </button>
+    <div class="card-elevated">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+          <FunnelIcon class="w-5 h-5 text-gray-500 mr-2" />
+          Filters
+        </h3>
+        <span class="text-sm text-gray-500">{{ salesStore.sales.length }} sales found</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select
+            v-model="selectedStatus"
+            @change="handleFilterChange"
+            class="form-input"
+          >
+            <option value="">All Status</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <select
+            v-model="selectedPaymentMethod"
+            @change="handleFilterChange"
+            class="form-input"
+          >
+            <option value="">All Methods</option>
+            <option value="cash">Cash</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="debit_card">Debit Card</option>
+            <option value="digital_wallet">Digital Wallet</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input
+            v-model="selectedDate"
+            @change="handleFilterChange"
+            type="date"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label invisible">Actions</label>
+          <button
+            @click="resetFilters"
+            class="btn btn-outline w-full"
+          >
+            <ArrowPathIcon class="w-4 h-4 mr-2" />
+            Reset
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label invisible">Export</label>
+          <button
+            @click="exportSales"
+            class="btn btn-success w-full"
+            :disabled="salesStore.loading"
+          >
+            <DocumentArrowDownIcon class="w-4 h-4 mr-2" />
+            Export
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div v-if="!salesStore.loading && salesStore.sales.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Sales -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+              <CurrencyDollarIcon class="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Total Sales</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            {{ formatCurrency(totalSalesAmount) }}
+          </p>
+          <p class="text-sm text-gray-500 mt-1">From {{ salesStore.sales.length }} transactions</p>
+        </div>
+      </div>
+
+      <!-- Average Sale -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+              <ChartBarIcon class="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Average Sale</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            {{ formatCurrency(averageSaleAmount) }}
+          </p>
+          <p class="text-sm text-gray-500 mt-1">Per transaction</p>
+        </div>
+      </div>
+
+      <!-- Completed Sales -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+              <CheckCircleIcon class="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Completed Sales</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            {{ completedSalesCount }}
+          </p>
+          <p class="text-sm text-gray-500 mt-1">{{ ((completedSalesCount / salesStore.sales.length) * 100).toFixed(1) }}% completion rate</p>
+        </div>
+      </div>
+
+      <!-- Today's Sales -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <CalendarDaysIcon class="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Today's Sales</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            {{ formatCurrency(todaySalesAmount) }}
+          </p>
+          <p class="text-sm text-gray-500 mt-1">{{ todaySalesCount }} transactions today</p>
+        </div>
       </div>
     </div>
 
@@ -284,7 +399,10 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
             </svg>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mt-2">⚠️ Delete Sales</h3>
+          <div class="flex items-center mt-2">
+            <ExclamationTriangleIcon class="w-5 h-5 text-red-500 mr-2" />
+            <h3 class="text-lg font-medium text-gray-900">Delete Sales</h3>
+          </div>
           <div class="mt-2 px-7 py-3">
             <p class="text-sm text-gray-500">
               Are you sure you want to delete <strong>{{ selectedSales.length }} selected sales</strong>? This action cannot be undone.
@@ -395,6 +513,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
+import {
+  ExclamationTriangleIcon,
+  CurrencyDollarIcon,
+  FunnelIcon,
+  ArrowPathIcon,
+  DocumentArrowDownIcon,
+  ChartBarIcon,
+  CheckCircleIcon,
+  CalendarDaysIcon
+} from '@heroicons/vue/24/outline'
 import { useSalesStore } from '../stores/sales'
 import type { Sale, SaleFilters } from '../services/sales'
 import { salesService } from '../services/sales'
@@ -441,6 +569,31 @@ const visiblePages = computed(() => {
   }
 
   return pages
+})
+
+// Statistics computed properties
+const totalSalesAmount = computed(() => {
+  return salesStore.sales.reduce((total, sale) => total + parseFloat(sale.total_amount), 0)
+})
+
+const averageSaleAmount = computed(() => {
+  return salesStore.sales.length > 0 ? totalSalesAmount.value / salesStore.sales.length : 0
+})
+
+const completedSalesCount = computed(() => {
+  return salesStore.sales.filter(sale => sale.status === 'completed').length
+})
+
+const todaySalesAmount = computed(() => {
+  const today = new Date().toDateString()
+  return salesStore.sales
+    .filter(sale => new Date(sale.sale_date).toDateString() === today)
+    .reduce((total, sale) => total + parseFloat(sale.total_amount), 0)
+})
+
+const todaySalesCount = computed(() => {
+  const today = new Date().toDateString()
+  return salesStore.sales.filter(sale => new Date(sale.sale_date).toDateString() === today).length
 })
 
 // Watch for page changes to clear selection
@@ -583,6 +736,35 @@ function formatDate(dateString: string) {
 function formatCurrency(amount: number | string) {
   const numAmount = parseFloat(amount as string) || 0
   return `$${numAmount.toFixed(2)}`
+}
+
+function exportSales() {
+  try {
+    const salesData = salesStore.sales.map(sale => ({
+      ID: sale.id,
+      Date: formatDate(sale.sale_date),
+      Customer: sale.customer_name || 'N/A',
+      Total: formatCurrency(sale.total_amount),
+      'Payment Method': sale.payment_method,
+      Status: sale.status
+    }))
+
+    const csvContent = "data:text/csv;charset=utf-8,"
+      + "ID,Date,Customer,Total,Payment Method,Status\n"
+      + salesData.map(row => Object.values(row).join(",")).join("\n")
+
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", `sales_export_${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    success('Export Successful', 'Sales data has been exported to CSV file')
+  } catch (error) {
+    error('Export Failed', 'Unable to export sales data. Please try again.')
+  }
 }
 
 // Lifecycle

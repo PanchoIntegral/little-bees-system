@@ -102,12 +102,12 @@ const iconTextClass = computed(() => {
 
 const iconDisplay = computed(() => {
   const iconMap = {
-    currency: '💰',
-    trend_up: '📈',
-    chart_bar: '📊',
-    warning: '⚠️'
+    currency: 'currency',
+    trend_up: 'trending',
+    chart_bar: 'chart',
+    warning: 'warning'
   }
-  return iconMap[props.iconType] || '📊'
+  return iconMap[props.iconType] || 'chart'
 })
 
 </script>

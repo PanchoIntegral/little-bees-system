@@ -53,17 +53,6 @@
           >
             🔒 Seguridad
           </button>
-          <button
-            @click="activeTab = 'preferences'"
-            :class="[
-              'px-3 py-2 text-sm font-medium transition-colors',
-              activeTab === 'preferences'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-            ]"
-          >
-            ⚙️ Preferencias
-          </button>
         </nav>
       </div>
 
@@ -163,97 +152,10 @@
           </div>
         </div>
 
-        <!-- Account Stats -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Estadísticas de la Cuenta</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-blue-600">{{ accountStats.days_active }}</div>
-              <div class="text-sm text-gray-600">Días activo</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-green-600">{{ accountStats.last_login }}</div>
-              <div class="text-sm text-gray-600">Último acceso</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-purple-600">{{ accountStats.security_score }}</div>
-              <div class="text-sm text-gray-600">Puntuación de seguridad</div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Security Tab -->
       <div v-if="activeTab === 'security'" class="space-y-6">
-        <!-- Password Section -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-lg font-medium text-gray-900 mb-4">🔐 Cambiar Contraseña</h2>
-          <p class="text-sm text-gray-600 mb-6">
-            Es recomendable cambiar tu contraseña periódicamente para mantener tu cuenta segura.
-          </p>
-
-          <form @submit.prevent="handlePasswordChange" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">
-                  Contraseña Actual
-                </label>
-                <input
-                  id="currentPassword"
-                  v-model="passwordForm.current"
-                  type="password"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">
-                  Nueva Contraseña
-                </label>
-                <input
-                  id="newPassword"
-                  v-model="passwordForm.new"
-                  type="password"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-
-            <div class="text-xs text-gray-500 space-y-1">
-              <p>La contraseña debe incluir:</p>
-              <ul class="list-disc list-inside space-y-1 ml-2">
-                <li>Al menos 8 caracteres</li>
-                <li>Una letra mayúscula</li>
-                <li>Una letra minúscula</li>
-                <li>Un número</li>
-                <li>Un carácter especial (@$!%*?&)</li>
-              </ul>
-            </div>
-
-            <div v-if="passwordMessage" :class="[
-              'p-3 rounded-md',
-              passwordMessage.type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-            ]">
-              <p :class="[
-                'text-sm',
-                passwordMessage.type === 'success' ? 'text-green-600' : 'text-red-600'
-              ]">
-                {{ passwordMessage.text }}
-              </p>
-            </div>
-
-            <div class="flex justify-end">
-              <button
-                type="submit"
-                :disabled="isPasswordLoading || !isValidPassword"
-                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {{ isPasswordLoading ? 'Cambiando...' : 'Cambiar Contraseña' }}
-              </button>
-            </div>
-          </form>
-        </div>
 
         <!-- Two-Factor Authentication Section -->
         <TwoFactorSetup />
@@ -295,92 +197,6 @@
         </div>
       </div>
 
-      <!-- Preferences Tab -->
-      <div v-if="activeTab === 'preferences'" class="space-y-6">
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-lg font-medium text-gray-900 mb-4">🎨 Preferencias de la Aplicación</h2>
-
-          <div class="space-y-6">
-            <!-- Theme Selection -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">Tema</label>
-              <div class="grid grid-cols-3 gap-3">
-                <button
-                  v-for="theme in themes"
-                  :key="theme.id"
-                  @click="selectedTheme = theme.id"
-                  :class="[
-                    'p-3 rounded-lg border-2 transition-all',
-                    selectedTheme === theme.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  ]"
-                >
-                  <div class="text-center">
-                    <div class="text-2xl mb-1">{{ theme.icon }}</div>
-                    <div class="text-sm font-medium">{{ theme.name }}</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <!-- Language Selection -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">Idioma</label>
-              <select
-                v-model="selectedLanguage"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="es">🇪🇸 Español</option>
-                <option value="en">🇺🇸 English</option>
-                <option value="fr">🇫🇷 Français</option>
-              </select>
-            </div>
-
-            <!-- Notifications -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">Notificaciones</label>
-              <div class="space-y-3">
-                <label class="flex items-center">
-                  <input
-                    v-model="notifications.email"
-                    type="checkbox"
-                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  >
-                  <span class="ml-2 text-sm text-gray-700">Notificaciones por email</span>
-                </label>
-                <label class="flex items-center">
-                  <input
-                    v-model="notifications.browser"
-                    type="checkbox"
-                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  >
-                  <span class="ml-2 text-sm text-gray-700">Notificaciones del navegador</span>
-                </label>
-                <label class="flex items-center">
-                  <input
-                    v-model="notifications.security"
-                    type="checkbox"
-                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  >
-                  <span class="ml-2 text-sm text-gray-700">Alertas de seguridad</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Save Preferences -->
-            <div class="flex justify-end">
-              <button
-                @click="savePreferences"
-                :disabled="isSavingPreferences"
-                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {{ isSavingPreferences ? 'Guardando...' : 'Guardar Preferencias' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Logout Section (Always Visible) -->
       <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">

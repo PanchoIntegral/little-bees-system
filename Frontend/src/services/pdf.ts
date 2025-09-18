@@ -26,10 +26,42 @@ export class PDFService {
         address: "123 Candle Street, Wax City, WC 12345",
         phone: "(555) 123-4567",
         email: "info@littlebeescandles.com",
-        // You can replace this with your actual logo placed in Frontend/public/logo.png
-        // or pass it dynamically when calling the service in the future.
-        logoUrl: '/favicon.svg'
+        // Ruta del logo oficial exigido. Coloca el archivo en Frontend/public/logo-little-bees.png
+        // o actualiza esta ruta para apuntar al archivo definitivo.
+        logoUrl: '/logo-little-bees.png'
       }
+    }
+
+    // Intentar incrustar el logo como data URL para que siempre cargue en la ventana de impresión
+    try {
+      const candidates: string[] = []
+      if (receiptData.companyInfo.logoUrl) candidates.push(receiptData.companyInfo.logoUrl)
+      candidates.push('/logo-little-bees.svg', '/logo.png', '/logo.svg', '/favicon.svg')
+
+      const toAbsolute = (u: string) => (u.startsWith('http') || u.startsWith('data:') ? u : new URL(u, window.location.origin).toString())
+
+      for (const candidate of candidates) {
+        if (!candidate || candidate.startsWith('data:')) continue
+        try {
+          const absolute = toAbsolute(candidate)
+          const response = await fetch(`${absolute}?v=${Date.now()}`, { cache: 'no-cache' })
+          if (!response.ok) continue
+          const blob = await response.blob()
+          if (!blob.type.startsWith('image/')) continue
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = () => resolve(reader.result as string)
+            reader.onerror = () => reject(new Error('Logo FileReader error'))
+            reader.readAsDataURL(blob)
+          })
+          receiptData.companyInfo.logoUrl = dataUrl
+          break
+        } catch {
+          // probar siguiente candidato
+        }
+      }
+    } catch (_) {
+      // si falla, dejamos la URL tal cual y el <img> usará la ruta
     }
 
     // Pre-generate QR como data URL (offline)
@@ -69,6 +101,7 @@ export class PDFService {
    */
   private static generateReceiptHTML(data: ReceiptData): string {
     const { sale, companyInfo } = data;
+    // no usamos logo por requerimiento; encabezado será solo tipográfico
     const discountValue = typeof (sale as any).discount_amount === 'string'
       ? parseFloat((sale as any).discount_amount)
       : ((sale as any).discount_amount || 0);
@@ -89,36 +122,40 @@ export class PDFService {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Recibo - ${(sale as any).receipt_number || 'Venta'}</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
           <style>
             :root { --primary:#111827; --muted:#6B7280; --border:#E5E7EB; --accent:#F59E0B; }
             * { box-sizing: border-box; }
-            body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin:0; background:#f8fafc; color:#111827; }
+            body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin:0; background:#f8fafc; color:#111827; }
             .page { width: 800px; max-width: 100%; margin: 24px auto; background:#fff; border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
-            .header { display:flex; align-items:center; justify-content:space-between; padding:24px 28px; border-bottom:1px solid var(--border); }
-            .brand { display:flex; align-items:center; gap:16px; }
-            .brand img { height:56px; width:auto; }
-            .brand h1 { margin:0; font-size:20px; letter-spacing:1.2px; }
+            .header { display:flex; align-items:center; justify-content:space-between; padding:28px 32px; border-bottom:1px solid var(--border); }
+            .brand { display:flex; align-items:center; gap:0; }
+            .wordmark { line-height:1.05; }
+            .wordmark .title { font-family: "Playfair Display", serif; margin:0; font-size:26px; letter-spacing:0.18em; font-weight:700; text-transform:uppercase; }
             .meta { text-align:right; font-size:13px; color:var(--muted); }
             .meta strong { color:#111827; font-size:14px; }
-            .sections { display:grid; grid-template-columns: 1fr 1fr; gap:16px; padding:20px 28px; }
+            .sections { display:grid; grid-template-columns: 1fr 1fr; gap:16px; padding:20px 32px; }
             .card { border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
             .card h3 { margin:0 0 8px; font-size:13px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; }
             .card p { margin:4px 0; font-size:14px; }
-            .items { padding:0 28px 8px; }
+            .items { padding:0 32px 8px; }
             table { width:100%; border-collapse:collapse; }
             thead th { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-align:left; padding:10px 8px; border-bottom:1px solid var(--border); }
             tbody td { padding:12px 8px; border-bottom:1px solid var(--border); font-size:14px; vertical-align:top; }
             tbody tr:last-child td { border-bottom:none; }
             .qty, .price, .amount { text-align:right; white-space:nowrap; }
-            .totals { padding:12px 28px 24px; display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:start; }
-            .summary { border:1px solid var(--border); border-radius:12px; padding:12px 16px; }
+            .totals { padding:12px 32px 28px; display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:start; }
+            .summary { border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
             .summary .row { display:flex; justify-content:space-between; margin:8px 0; font-size:14px; }
-            .summary .total { font-weight:700; font-size:18px; border-top:1px dashed var(--border); padding-top:10px; }
+            .summary .total { font-weight:700; font-size:18px; border-top:1px dashed var(--border); padding-top:12px; }
             .notes { font-size:13px; color:var(--muted); }
             .qr { text-align:center; }
-            .qr img { height:96px; width:96px; }
-            .footer { padding:14px 28px 24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; display:flex; align-items:center; justify-content:space-between; }
+            .qr img { height:88px; width:88px; }
+            .footer { padding:16px 32px 28px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; display:flex; align-items:center; justify-content:space-between; }
             .badge { background: #FEF3C7; color:#92400E; border:1px solid #FDE68A; padding:4px 8px; border-radius:999px; font-size:12px; }
+            @page { margin: 16mm; }
             @media print {
               body { background:#fff; }
               .page { width: 100%; margin: 0; border:none; box-shadow:none; border-radius:0; }
@@ -130,10 +167,8 @@ export class PDFService {
         <div class="page">
           <div class="header">
             <div class="brand">
-              ${companyInfo.logoUrl ? `<img src="${companyInfo.logoUrl}" alt="logo" />` : ''}
-              <div>
-                <h1>${companyInfo.name}</h1>
-                <div style="font-size:12px;color:var(--muted);">${companyInfo.address} · ${companyInfo.phone} · ${companyInfo.email}</div>
+              <div class="wordmark">
+                <h1 class="title">${companyInfo.name}</h1>
               </div>
             </div>
             <div class="meta">
@@ -189,13 +224,13 @@ export class PDFService {
               <div class="row"><span>Subtotal</span><span>$${this.formatCurrency(this.calculateOriginalSubtotal(sale))}</span></div>
               ${this.generateDiscountRows(sale)}
               <div class="row"><span>Impuestos</span><span>$${this.formatCurrency(taxValue)}</span></div>
-              <div class="row total"><span>Total</span><span>${this.formatCurrency(finalTotal)}</span></div>
+              <div class="row total"><span>Total</span><span>$${this.formatCurrency(finalTotal)}</span></div>
             </div>
           </div>
 
           <div class="footer">
             <div>
-              ¡Gracias por su compra! Síguenos en redes @littlebeescandles
+              ¡Gracias por su compra! ${companyInfo.address} · ${companyInfo.phone} · ${companyInfo.email}
             </div>
             <div class="qr">
               ${data.qrDataUrl ? `<img src="${data.qrDataUrl}" alt="QR" />` : ''}

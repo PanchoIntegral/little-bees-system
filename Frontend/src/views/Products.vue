@@ -1,7 +1,10 @@
 <template>
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <h1 class="text-3xl font-bold text-gray-900">🕯️ Products</h1>
+      <div class="flex items-center">
+        <CubeIcon class="w-8 h-8 text-amber-500 mr-3" />
+        <h1 class="text-3xl font-bold text-gray-900">Products</h1>
+      </div>
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="relative">
           <input
@@ -135,10 +138,6 @@
             @load="handleImageLoad(product)"
           />
           <span v-else class="text-6xl">🕯️</span>
-          <!-- Debug info -->
-          <div v-if="product.image_url" class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
-            {{ product.image_url }}
-          </div>
         </div>
         <h3 class="font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
         <p class="text-2xl font-bold text-primary-600 mb-2">{{ product.formatted_price }}</p>
@@ -152,7 +151,7 @@
             }"
           >
             Stock: {{ product.stock_quantity }}
-            <span v-if="product.low_stock || product.out_of_stock"> ⚠️</span>
+            <ExclamationTriangleIcon v-if="product.low_stock || product.out_of_stock" class="w-4 h-4 text-amber-500 ml-1" />
           </span>
           <span class="text-sm text-gray-500">SKU: {{ product.sku }}</span>
         </div>
@@ -241,6 +240,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { CubeIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useProductsStore } from '../stores/products'
 import { useNotifications } from '../composables/useNotifications'
 import type { Product, ProductFilters } from '../services/products'

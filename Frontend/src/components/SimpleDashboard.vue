@@ -3,7 +3,10 @@
     <!-- Dashboard Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">📊 Dashboard</h1>
+        <div class="flex items-center">
+          <ChartBarIcon class="w-8 h-8 text-amber-500 mr-3" />
+          <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        </div>
         <p class="text-sm text-gray-500 mt-1">
           {{ currentDate }}
         </p>
@@ -62,7 +65,7 @@
                 class="flex items-center justify-between px-4 py-2 hover:bg-gray-50"
               >
                 <div class="flex items-center">
-                  <span class="text-lg mr-2">{{ widget.icon }}</span>
+                  <component :is="widget.component" class="w-5 h-5 text-gray-500 mr-2" />
                   <span class="text-sm text-gray-700">{{ widget.name }}</span>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -169,7 +172,10 @@
             :loading="isLoading"
           />
           <div v-if="isEditMode" class="widget-overlay">
-            <span class="widget-label">⚠️ Alertas de Inventario</span>
+            <div class="flex items-center widget-label">
+              <ExclamationTriangleIcon class="w-5 h-5 text-amber-500 mr-2" />
+              <span>Alertas de Inventario</span>
+            </div>
           </div>
         </div>
       </div>
@@ -252,7 +258,10 @@
 
         <!-- Inventory Alerts -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">⚠️ Alertas de Inventario</h3>
+          <div class="flex items-center mb-4">
+            <ExclamationTriangleIcon class="w-6 h-6 text-amber-500 mr-2" />
+            <h3 class="text-lg font-medium text-gray-900">Alertas de Inventario</h3>
+          </div>
 
           <div v-if="inventoryAlerts.length" class="space-y-3">
             <div
@@ -305,7 +314,10 @@
 
     <!-- Edit Mode Indicator -->
     <div v-if="isEditMode" class="edit-mode-indicator">
-      ✏️ Modo Edición Activo
+      <div class="flex items-center">
+        <PencilIcon class="w-4 h-4 mr-2" />
+        <span>Modo Edición Activo</span>
+      </div>
     </div>
   </div>
 </template>
@@ -314,6 +326,14 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useSalesStore } from '../stores/sales'
 import { useProductsStore } from '../stores/products'
+import {
+  ChartBarIcon,
+  CurrencyDollarIcon,
+  ArrowTrendingUpIcon,
+  PresentationChartLineIcon,
+  ExclamationTriangleIcon,
+  PencilIcon
+} from '@heroicons/vue/24/outline'
 import StatCard from './widgets/StatCard.vue'
 
 // Stores
@@ -331,37 +351,43 @@ const availableWidgets = ref([
   {
     id: 'today_revenue',
     name: 'Ingresos de Hoy',
-    icon: '💰',
+    icon: 'currency',
+    component: CurrencyDollarIcon,
     enabled: true
   },
   {
     id: 'monthly_revenue',
     name: 'Ingresos del Mes',
-    icon: '📈',
+    icon: 'trending',
+    component: ArrowTrendingUpIcon,
     enabled: true
   },
   {
     id: 'average_sale',
     name: 'Venta Promedio',
-    icon: '📊',
+    icon: 'chart',
+    component: PresentationChartLineIcon,
     enabled: true
   },
   {
     id: 'inventory_alerts',
     name: 'Alertas de Inventario',
-    icon: '⚠️',
+    icon: 'warning',
+    component: ExclamationTriangleIcon,
     enabled: true
   },
   {
     id: 'payment_methods',
     name: 'Métodos de Pago',
-    icon: '💳',
+    icon: 'currency',
+    component: CurrencyDollarIcon,
     enabled: true
   },
   {
     id: 'daily_sales',
     name: 'Ventas Diarias',
-    icon: '📅',
+    icon: 'chart',
+    component: ChartBarIcon,
     enabled: true
   }
 ])

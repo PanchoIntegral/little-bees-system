@@ -266,16 +266,6 @@
         </button>
       </form>
 
-      <!-- Demo Credentials -->
-      <div class="mt-8 p-4 bg-amber-50 border border-amber-100 rounded-xl">
-        <div class="text-center">
-          <p class="text-xs font-medium text-amber-800 mb-2">Demo Account</p>
-          <div class="text-xs text-amber-700 space-y-1">
-            <p><span class="font-medium">Email:</span> admin@littlebees.com</p>
-            <p><span class="font-medium">Password:</span> admin123</p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>

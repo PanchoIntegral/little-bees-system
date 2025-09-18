@@ -2,128 +2,155 @@
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">Descuentos y Ofertas</h1>
-          <p class="text-gray-600 mt-2">Gestiona ofertas especiales y descuentos para tus productos</p>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center mr-4">
+            <TagIcon class="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Discounts & Offers</h1>
+            <p class="text-gray-600 text-sm mt-1">Manage special offers and discounts for your products</p>
+          </div>
         </div>
         <button
           @click="showCreateOfferModal = true"
-          class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center"
+          class="btn btn-amber"
         >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          Nueva Oferta
+          <PlusIcon class="w-5 h-5 mr-2" />
+          New Offer
         </button>
       </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl text-white">
-        <div class="flex items-center">
-          <div class="p-2 bg-white bg-opacity-30 rounded-lg">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-            </svg>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Active Offers -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+              <TagIcon class="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-blue-100">Ofertas Activas</p>
-            <p class="text-2xl font-bold">{{ activeOffers }}</p>
-          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Active Offers</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            {{ activeOffers }}
+          </p>
+          <p class="text-sm text-gray-500 mt-1">Currently running</p>
         </div>
       </div>
 
-      <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-xl text-white">
-        <div class="flex items-center">
-          <div class="p-2 bg-white bg-opacity-30 rounded-lg">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
+      <!-- Products with Offers -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+              <CubeIcon class="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-green-100">Productos con Oferta</p>
-            <p class="text-2xl font-bold">{{ productsWithOffers }}</p>
-          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Products with Offers</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            {{ productsWithOffers }}
+          </p>
+          <p class="text-sm text-gray-500 mt-1">Items on discount</p>
         </div>
       </div>
 
-      <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-xl text-white">
-        <div class="flex items-center">
-          <div class="p-2 bg-white bg-opacity-30 rounded-lg">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-            </svg>
+      <!-- Total Savings -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <ArrowTrendingUpIcon class="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-purple-100">Ahorro Total</p>
-            <p class="text-2xl font-bold">${{ totalSavings.toFixed(2) }}</p>
-          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Total Savings</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            ${{ totalSavings.toFixed(2) }}
+          </p>
+          <p class="text-sm text-gray-500 mt-1">Customer savings</p>
         </div>
       </div>
 
-      <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 rounded-xl text-white">
-        <div class="flex items-center">
-          <div class="p-2 bg-white bg-opacity-30 rounded-lg">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-            </svg>
+      <!-- Average Discount -->
+      <div class="card-elevated">
+        <div class="flex items-start justify-between">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+              <CurrencyDollarIcon class="w-6 h-6 text-white" />
+            </div>
           </div>
-          <div class="ml-4">
-            <p class="text-orange-100">Promedio Descuento</p>
-            <p class="text-2xl font-bold">{{ averageDiscount.toFixed(1) }}%</p>
-          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-600 mb-1">Average Discount</p>
+          <p class="text-3xl font-bold text-gray-900 tracking-tight">
+            {{ averageDiscount.toFixed(1) }}%
+          </p>
+          <p class="text-sm text-gray-500 mt-1">Per offer</p>
         </div>
       </div>
     </div>
 
     <!-- Filters and Search -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+    <div class="card-elevated">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+          <FunnelIcon class="w-5 h-5 text-gray-500 mr-2" />
+          Filters & Search
+        </h3>
+        <span class="text-sm text-gray-500">{{ filteredOffers.length }} offers found</span>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Ofertas</label>
+        <div class="form-group">
+          <label class="form-label">Search Offers</label>
           <div class="relative">
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Buscar por nombre o producto..."
+              placeholder="Search by name or product..."
               class="form-input w-full pl-10"
             />
-            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
+            <MagnifyingGlassIcon class="w-5 h-5 text-gray-400 absolute left-3 top-3" />
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Oferta</label>
+        <div class="form-group">
+          <label class="form-label">Offer Type</label>
           <select v-model="selectedOfferType" class="form-input w-full">
-            <option value="">Todos los tipos</option>
-            <option value="percentage">Descuento Porcentual</option>
-            <option value="fixed">Descuento Fijo</option>
-            <option value="buy_x_get_y">Compra X Lleva Y</option>
-            <option value="bundle">Paquete</option>
+            <option value="">All Types</option>
+            <option value="percentage">Percentage Discount</option>
+            <option value="fixed">Fixed Amount</option>
+            <option value="buy_x_get_y">Buy X Get Y</option>
+            <option value="bundle">Bundle Deal</option>
           </select>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+        <div class="form-group">
+          <label class="form-label">Status</label>
           <select v-model="selectedStatus" class="form-input w-full">
-            <option value="">Todos los estados</option>
-            <option value="active">Activo</option>
-            <option value="inactive">Inactivo</option>
-            <option value="scheduled">Programado</option>
-            <option value="expired">Expirado</option>
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="expired">Expired</option>
           </select>
         </div>
 
-        <div class="flex items-end">
+        <div class="form-group">
+          <label class="form-label invisible">Actions</label>
           <button
             @click="clearFilters"
-            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors w-full"
+            class="btn btn-outline w-full"
           >
-            Limpiar Filtros
+            <ArrowPathIcon class="w-4 h-4 mr-2" />
+            Clear Filters
           </button>
         </div>
       </div>
@@ -151,35 +178,36 @@
           <p class="text-gray-500 mb-4">Comienza creando tu primera oferta o descuento.</p>
           <button
             @click="showCreateOfferModal = true"
-            class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors"
+            class="btn btn-amber"
           >
-            Crear Primera Oferta
+            <PlusIcon class="w-4 h-4 mr-2" />
+            Create First Offer
           </button>
         </div>
 
-        <div v-else class="space-y-4">
+        <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div
             v-for="offer in filteredOffers"
             :key="offer.id"
-            class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+            class="card-elevated group"
           >
             <div class="flex items-start justify-between">
               <div class="flex-1">
                 <div class="flex items-center mb-2">
                   <h4 class="text-lg font-semibold text-gray-900">{{ offer.name }}</h4>
                   <span
-                    class="ml-3 px-2 py-1 text-xs font-medium rounded-full"
+                    class="ml-3"
                     :class="{
-                      'bg-green-100 text-green-800': offer.status === 'active',
-                      'bg-gray-100 text-gray-800': offer.status === 'inactive',
-                      'bg-blue-100 text-blue-800': offer.status === 'scheduled',
-                      'bg-red-100 text-red-800': offer.status === 'expired'
+                      'status-active': offer.status === 'active',
+                      'status-inactive': offer.status === 'inactive',
+                      'status-warning': offer.status === 'scheduled',
+                      'status-danger': offer.status === 'expired'
                     }"
                   >
                     {{ getStatusLabel(offer.status) }}
                   </span>
                   <span
-                    class="ml-2 px-2 py-1 text-xs font-medium rounded-full"
+                    class="ml-2 px-3 py-1.5 rounded-full text-xs font-semibold shadow-soft"
                     :class="{
                       'bg-purple-100 text-purple-800': offer.type === 'percentage',
                       'bg-blue-100 text-blue-800': offer.type === 'fixed',
@@ -273,6 +301,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import {
+  TagIcon,
+  PlusIcon,
+  CubeIcon,
+  ArrowTrendingUpIcon,
+  CurrencyDollarIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
+  ArrowPathIcon
+} from '@heroicons/vue/24/outline'
 import { useProductsStore } from '../stores/products'
 import { useOffersStore } from '../stores/offers'
 import { useToast } from '../services/toast'

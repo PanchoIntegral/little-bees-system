@@ -2,7 +2,7 @@
   <BaseWidget
     :widget-id="widgetId"
     :title="title"
-    icon="⚠️"
+    icon="warning"
     :loading="productsStore.loading"
     :error="productsStore.error"
     :is-edit-mode="isEditMode"
@@ -31,7 +31,7 @@
             }"
           >
             {{ product.stock_quantity }} left
-            <span v-if="product.out_of_stock || product.low_stock" class="ml-1">⚠️</span>
+            <ExclamationTriangleIcon v-if="product.out_of_stock || product.low_stock" class="w-3 h-3 ml-1" />
           </span>
           <p class="text-xs text-gray-500 mt-1">
             <span v-if="product.out_of_stock">Sin stock</span>
@@ -62,6 +62,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import BaseWidget from './BaseWidget.vue'
 import { useProductsStore } from '../../stores/products'
 
