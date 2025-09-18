@@ -124,27 +124,22 @@ export const useSalesStore = defineStore('sales', () => {
     }
   }
 
-  async function deleteAllSales() {
+  async function bulkDeleteSales(saleIds: number[]) {
     loading.value = true
     error.value = null
 
     try {
-      const response = await salesService.deleteAllSales()
-      sales.value = []
-      currentSale.value = null
-
-      // Reset pagination
-      pagination.value = {
-        current_page: 1,
-        total_pages: 1,
-        total_count: 0,
-        per_page: 20
-      }
+      const response = await salesService.bulkDeleteSales(saleIds)
+      // Remove deleted sales from the local state
+      sales.value = sales.value.filter(s => !saleIds.includes(s.id))
+      
+      // Update pagination
+      pagination.value.total_count -= response.deleted_count
 
       return response
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Failed to delete all sales'
-      console.error('Error deleting all sales:', err)
+      error.value = err.response?.data?.error || 'Failed to delete sales'
+      console.error('Error deleting sales:', err)
       throw err
     } finally {
       loading.value = false
@@ -286,7 +281,7 @@ export const useSalesStore = defineStore('sales', () => {
     createSale,
     updateSale,
     deleteSale,
-    deleteAllSales,
+    bulkDeleteSales,
     completeSale,
     cancelSale,
     addSaleItem,

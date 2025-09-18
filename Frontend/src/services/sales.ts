@@ -1,4 +1,5 @@
 import { apiService } from './api'
+import { authService } from './auth'
 import { Product } from './products'
 
 export interface User {
@@ -73,10 +74,19 @@ export interface CreateSaleData {
   payment_method: string
   notes?: string
   customer_id?: number
+  anonymous_customer_name?: string | null
+  discount_amount?: number
+  applied_sale_offers?: {
+    id: number;
+    name: string;
+    discount_type: string;
+    discount_value: number;
+  }[]
   sale_items_attributes?: {
     product_id: number;
     quantity: number;
     unit_price: number;
+    applied_offers?: number[];
   }[];
 }
 
@@ -97,6 +107,16 @@ export interface DashboardStats {
   }
   average_sale: number
   recent_sales: Sale[]
+  daily_sales: DailySales[]
+}
+
+export interface DailySales {
+  date: string
+  formatted_date: string
+  short_date: string
+  sales_count: number
+  total_revenue: number
+  sales: Sale[]
 }
 
 class SalesService {
@@ -120,8 +140,27 @@ class SalesService {
     return apiService.delete<{ message: string }>(`/v1/sales/${id}`)
   }
 
-  async deleteAllSales(): Promise<{ message: string; deleted_count: number }> {
-    return apiService.delete<{ message: string; deleted_count: number }>('/v1/sales/destroy_all')
+  async bulkDeleteSales(saleIds: number[]): Promise<{ message: string; deleted_count: number }> {
+    const token = authService.getToken()
+    if (!token) {
+      throw new Error('Authentication token not found.')
+    }
+
+    const response = await fetch('http://localhost:3000/api/v1/sales/bulk_destroy', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ sale: { sale_ids: saleIds } })
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }))
+      throw new Error(errorData.error || `Request failed with status ${response.status}`)
+    }
+
+    return response.json()
   }
 
   async completeSale(id: number): Promise<Sale> {

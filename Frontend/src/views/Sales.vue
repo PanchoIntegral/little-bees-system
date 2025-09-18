@@ -16,18 +16,31 @@
           </svg>
         </div>
         <div class="flex gap-3">
-          <!-- Admin-only Delete All Sales button -->
-          <button
-            v-if="isAdmin"
-            @click="showDeleteAllConfirmation = true"
-            class="btn btn-danger"
-            :disabled="salesStore.loading || salesStore.sales.length === 0"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-            </svg>
-            Delete All Sales
-          </button>
+          <!-- Admin-only Delete Selected Sales button -->
+          <div v-if="isAdmin" class="flex gap-3">
+            <button
+              v-if="!selectionModeActive"
+              @click="selectionModeActive = true"
+              class="btn btn-secondary"
+            >
+              Manage Sales
+            </button>
+            <template v-else>
+              <button
+                @click="showDeleteConfirmation = true"
+                class="btn btn-danger"
+                :disabled="salesStore.loading || selectedSales.length === 0"
+              >
+                Delete Selected ({{ selectedSales.length }})
+              </button>
+              <button
+                @click="cancelSelectionMode"
+                class="btn btn-outline"
+              >
+                Cancel
+              </button>
+            </template>
+          </div>
 
           <button
             @click="showNewSaleModal = true"
@@ -141,6 +154,9 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
+              <th v-if="selectionModeActive" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <input type="checkbox" @change="toggleSelectAll" :checked="isAllSelected" class="form-checkbox h-4 w-4 text-primary-600 transition duration-150 ease-in-out" />
+              </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
@@ -154,8 +170,12 @@
             <tr 
               v-for="sale in salesStore.sales"
               :key="sale.id"
-              class="hover:bg-gray-50"
+              class="hover:bg-gray-50 transition-colors duration-150"
+              :class="{ 'bg-primary-50': selectedSales.includes(sale.id) }"
             >
+              <td v-if="selectionModeActive" class="px-6 py-4 whitespace-nowrap">
+                <input type="checkbox" :value="sale.id" v-model="selectedSales" class="form-checkbox h-4 w-4 text-primary-600 transition duration-150 ease-in-out" />
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ sale.receipt_number }}
               </td>
@@ -255,8 +275,8 @@
       @success="handleSaleSuccess"
     />
 
-    <!-- Delete All Sales Confirmation Modal -->
-    <div v-if="showDeleteAllConfirmation" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="showDeleteAllConfirmation = false">
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmation" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="showDeleteConfirmation = false">
       <div class="relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 border w-96 shadow-lg rounded-md bg-white" @click.stop>
         <div class="mt-3 text-center">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
@@ -264,32 +284,32 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
             </svg>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mt-2">⚠️ Delete All Sales</h3>
+          <h3 class="text-lg font-medium text-gray-900 mt-2">⚠️ Delete Sales</h3>
           <div class="mt-2 px-7 py-3">
             <p class="text-sm text-gray-500">
-              Are you sure you want to delete <strong>ALL {{ salesStore.sales.length }} sales</strong>? This action cannot be undone and will permanently remove all sales data from the system.
+              Are you sure you want to delete <strong>{{ selectedSales.length }} selected sales</strong>? This action cannot be undone.
             </p>
           </div>
           <div class="flex justify-center space-x-3 mt-4">
             <button
-              @click="showDeleteAllConfirmation = false"
+              @click="showDeleteConfirmation = false"
               class="btn btn-secondary"
             >
               Cancel
             </button>
             <button
-              @click="deleteAllSales"
-              :disabled="deletingAllSales"
+              @click="deleteSelectedSales"
+              :disabled="deletingSales"
               class="btn btn-danger"
             >
-              <span v-if="deletingAllSales" class="flex items-center">
+              <span v-if="deletingSales" class="flex items-center">
                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Deleting...
               </span>
-              <span v-else>Yes, Delete All</span>
+              <span v-else>Yes, Delete</span>
             </button>
           </div>
         </div>
@@ -374,15 +394,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useSalesStore } from '../stores/sales'
 import type { Sale, SaleFilters } from '../services/sales'
 import { salesService } from '../services/sales'
 import { pdfService } from '../services/pdf'
 import { authService } from '../services/auth'
+import { useNotifications } from '../composables/useNotifications'
 import NewSaleModal from '../components/NewSaleModal.vue'
 
 const salesStore = useSalesStore()
+const { success: showSuccess, error: showError } = useNotifications()
 
 // Reactive state
 const searchQuery = ref('')
@@ -392,12 +414,18 @@ const selectedDate = ref('')
 const showNewSaleModal = ref(false)
 const showSaleDetails = ref(false)
 const selectedSale = ref<Sale | null>(null)
-const showDeleteAllConfirmation = ref(false)
-const deletingAllSales = ref(false)
+const showDeleteConfirmation = ref(false)
+const deletingSales = ref(false)
+const selectedSales = ref<number[]>([])
+const selectionModeActive = ref(false)
 
 // Computed
 const isAdmin = computed(() => {
   return authService.currentUser.value?.role === 'admin'
+})
+
+const isAllSelected = computed(() => {
+  return salesStore.sales.length > 0 && selectedSales.value.length === salesStore.sales.length
 })
 
 const visiblePages = computed(() => {
@@ -415,13 +443,18 @@ const visiblePages = computed(() => {
   return pages
 })
 
+// Watch for page changes to clear selection
+watch(() => salesStore.pagination.current_page, () => {
+  selectedSales.value = []
+})
+
 // Methods
 async function loadSales() {
   const filters: SaleFilters = {
     page: salesStore.pagination.current_page
   }
 
-  if (searchQuery.value) filters.query = searchQuery.value
+  if (searchQuery.value) filters.search = searchQuery.value
   if (selectedStatus.value) filters.status = selectedStatus.value
   if (selectedPaymentMethod.value) filters.payment_method = selectedPaymentMethod.value
   if (selectedDate.value) {
@@ -479,11 +512,9 @@ async function completeSale(saleId: number) {
 
 async function generateReceipt(saleId: number) {
   try {
-    // Find the sale in our store or fetch it
     let sale = salesStore.sales.find(s => s.id === saleId)
     
     if (!sale) {
-      // If not found in store, fetch it
       await salesStore.fetchSale(saleId)
       sale = salesStore.currentSale
     }
@@ -492,7 +523,6 @@ async function generateReceipt(saleId: number) {
       throw new Error('Sale not found')
     }
     
-    // Generate the PDF receipt
     await pdfService.generateReceipt(sale)
     
   } catch (error) {
@@ -501,34 +531,44 @@ async function generateReceipt(saleId: number) {
   }
 }
 
-async function deleteAllSales() {
+async function deleteSelectedSales() {
   if (!isAdmin.value) {
-    alert('Unauthorized. Admin access required.')
+    showError('Unauthorized', 'Admin access required.')
     return
   }
 
-  deletingAllSales.value = true
+  deletingSales.value = true
 
   try {
-    const response = await salesService.deleteAllSales()
+    const response = await salesStore.bulkDeleteSales(selectedSales.value)
 
-    // Show success message
-    alert(`Successfully deleted ${response.deleted_count} sales`)
+    showSuccess('Sales Deleted', `Successfully deleted ${response.deleted_count} sales`)
 
-    // Close modal and refresh sales list
-    showDeleteAllConfirmation.value = false
-    await loadSales()
+    showDeleteConfirmation.value = false
+    selectedSales.value = [] // Clear selection
+    selectionModeActive.value = false // Exit selection mode
 
   } catch (error: any) {
-    console.error('Error deleting all sales:', error)
-
-    // Show error message
-    const errorMessage = error.response?.data?.error || 'Failed to delete sales. Please try again.'
-    alert(`Error: ${errorMessage}`)
+    console.error('Error deleting sales:', error)
+    showError('Error Deleting Sales', error.message || 'Failed to delete sales. Please try again.')
 
   } finally {
-    deletingAllSales.value = false
+    deletingSales.value = false
   }
+}
+
+function toggleSelectAll(event: Event) {
+  const target = event.target as HTMLInputElement
+  if (target.checked) {
+    selectedSales.value = salesStore.sales.map(s => s.id)
+  } else {
+    selectedSales.value = []
+  }
+}
+
+function cancelSelectionMode() {
+  selectionModeActive.value = false
+  selectedSales.value = []
 }
 
 function handleSaleSuccess(sale: Sale) {
@@ -550,3 +590,7 @@ onMounted(() => {
   loadSales()
 })
 </script>
+
+<style scoped>
+/* Add any component-specific styles here */
+</style>

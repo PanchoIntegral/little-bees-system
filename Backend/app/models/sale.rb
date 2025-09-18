@@ -230,16 +230,13 @@ class Sale < ApplicationRecord
   end
 
   def calculate_discount_amount(subtotal_amount)
-    # Basic discount logic - can be enhanced later
-    return 0.0 if subtotal_amount < 50
+    # DISABLED: Only apply discounts from the offers module, not hardcoded discounts
+    return 0.0
 
-    # 10% discount for orders over $100
-    return subtotal_amount * 0.10 if subtotal_amount >= 100
-
-    # 5% discount for orders over $50
-    return subtotal_amount * 0.05 if subtotal_amount >= 50
-
-    0.0
+    # ORIGINAL HARDCODED LOGIC - DISABLED:
+    # return 0.0 if subtotal_amount < 50
+    # return subtotal_amount * 0.10 if subtotal_amount >= 100  # This was causing $20.27 discount
+    # return subtotal_amount * 0.05 if subtotal_amount >= 50
   end
   
   

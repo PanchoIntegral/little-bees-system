@@ -51,8 +51,11 @@ class Api::V1::SalesController < Api::BaseController
   end
 
   def create
-    @sale = Sale.new(sale_params)
-    @sale.user = current_user || User.first # Fallback to first user if no current_user
+    @sale = Sale.new(sale_params.except(:sale_items_attributes))
+    @sale.user = current_user || User.first
+
+    build_sale_items
+    apply_sale_level_discounts
 
     if @sale.save
       render json: @sale.as_json(
@@ -74,7 +77,16 @@ class Api::V1::SalesController < Api::BaseController
   end
 
   def update
-    if @sale.update(sale_params)
+    @sale.assign_attributes(sale_params.except(:sale_items_attributes))
+
+    # For updates, you might need to handle existing sale_items (update, delete, create)
+    # This is a simplified version that rebuilds items. A more complex implementation
+    # would handle `id` and `_destroy` attributes.
+    @sale.sale_items.destroy_all
+    build_sale_items
+    apply_sale_level_discounts
+
+    if @sale.save
       render json: @sale.as_json(
         include: {
           user: { only: [:id, :email, :first_name, :last_name] },
@@ -101,19 +113,25 @@ class Api::V1::SalesController < Api::BaseController
     end
   end
 
-  def destroy_all
-    # Only allow admins to delete all sales
+  def bulk_destroy
+    # Only allow admins to delete sales
     unless current_user&.admin?
       render json: { error: 'Unauthorized. Admin access required.' }, status: :forbidden
       return
     end
 
+    sale_ids = params.require(:sale).permit(sale_ids: [])[:sale_ids]
+
+    if sale_ids.blank?
+      render json: { error: 'Missing or invalid sale_ids parameter. It must be an array of sale IDs.' }, status: :bad_request
+      return
+    end
+
     begin
-      deleted_count = Sale.count
-      Sale.destroy_all
+      deleted_count = Sale.where(id: sale_ids).destroy_all.size
 
       render json: {
-        message: "Successfully deleted all #{deleted_count} sales",
+        message: "Successfully deleted #{deleted_count} sales",
         deleted_count: deleted_count
       }, status: :ok
     rescue StandardError => e
@@ -182,6 +200,9 @@ class Api::V1::SalesController < Api::BaseController
                       .order(created_at: :desc)
                       .limit(5)
 
+    # Get daily sales breakdown for the last 7 days
+    daily_sales = calculate_daily_sales_breakdown
+
     stats = {
       today: {
         sales_count: today_sales.count,
@@ -199,13 +220,40 @@ class Api::V1::SalesController < Api::BaseController
           customer: { only: [:id, :first_name, :last_name] }
         },
         methods: [:receipt_number, :formatted_total, :customer_name]
-      )
+      ),
+      daily_sales: daily_sales
     }
 
     render json: stats
   end
 
   private
+
+  def build_sale_items
+    return unless params[:sale] && params[:sale][:sale_items_attributes]
+
+    sale_items_attributes = params[:sale][:sale_items_attributes].is_a?(Hash) ? params[:sale][:sale_items_attributes].values : params[:sale][:sale_items_attributes]
+
+    sale_items_attributes.each do |item_attrs|
+      next if item_attrs[:product_id].blank?
+
+      @sale.sale_items.build(
+        product_id: item_attrs[:product_id],
+        quantity: item_attrs[:quantity],
+        unit_price: item_attrs[:unit_price]
+      )
+    end
+  end
+
+  def apply_sale_level_discounts
+    # Apply the sale-level discount amount if provided
+    if params[:sale] && params[:sale][:discount_amount].present?
+      @sale.discount_amount = params[:sale][:discount_amount].to_f
+    end
+
+    # Note: applied_sale_offers information is not stored in database
+    # but could be added later if needed for tracking
+  end
 
   def set_sale
     @sale = Sale.find(params[:id])
@@ -216,7 +264,8 @@ class Api::V1::SalesController < Api::BaseController
   def sale_params
     params.require(:sale).permit(
       :status, :payment_method, :notes, :customer_id, :anonymous_customer_name,
-      sale_items_attributes: [:product_id, :quantity, :unit_price, :discount_amount, applied_offers: []]
+      :discount_amount,
+      sale_items_attributes: [:id, :product_id, :quantity, :unit_price, :_destroy, applied_offers: []]
     )
   end
 
@@ -271,8 +320,6 @@ class Api::V1::SalesController < Api::BaseController
   def apply_amount_range_filter(collection)
     if params[:min_amount].present? && params[:max_amount].present?
       collection.where(total_amount: params[:min_amount].to_f..params[:max_amount].to_f)
-    elsif params[:min_amount].present?
-      collection.where('total_amount >= ?', params[:min_amount].to_f)
     elsif params[:max_amount].present?
       collection.where('total_amount <= ?', params[:max_amount].to_f)
     else
@@ -390,5 +437,41 @@ class Api::V1::SalesController < Api::BaseController
     else
       method.humanize
     end
+  end
+
+  def calculate_daily_sales_breakdown
+    # Get sales from the last 7 days grouped by date
+    start_date = 6.days.ago.beginning_of_day
+    end_date = Date.current.end_of_day
+
+    daily_data = []
+
+    (0..6).each do |days_ago|
+      date = days_ago.days.ago.to_date
+      day_start = date.beginning_of_day
+      day_end = date.end_of_day
+
+      day_sales = Sale.includes(:user, :customer)
+                     .where(created_at: day_start..day_end)
+                     .where(status: 'completed')
+                     .order(created_at: :desc)
+
+      daily_data << {
+        date: date.strftime('%Y-%m-%d'),
+        formatted_date: date.strftime('%A, %B %d'),
+        short_date: date.strftime('%m/%d'),
+        sales_count: day_sales.count,
+        total_revenue: day_sales.sum(:total_amount).to_f,
+        sales: day_sales.limit(10).as_json(
+          include: {
+            user: { only: [:id, :first_name, :last_name] },
+            customer: { only: [:id, :first_name, :last_name] }
+          },
+          methods: [:receipt_number, :formatted_total, :customer_name]
+        )
+      }
+    end
+
+    daily_data.reverse # Most recent first
   end
 end

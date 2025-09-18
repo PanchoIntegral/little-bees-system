@@ -14,7 +14,7 @@ class Discount < ApplicationRecord
   # Scopes
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
-  scope :current, -> { where('starts_at <= ? AND (ends_at IS NULL OR ends_at >= ?)', Time.current, Time.current) }
+  scope :current, -> { where('(starts_at IS NULL OR starts_at <= ?) AND (ends_at IS NULL OR ends_at >= ?)', Time.current, Time.current) }
   scope :upcoming, -> { where('starts_at > ?', Time.current) }
   scope :expired, -> { where('ends_at < ?', Time.current) }
   scope :percentage_type, -> { where(discount_type: 'percentage') }

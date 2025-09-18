@@ -250,12 +250,20 @@
       </div>
     </div>
 
-    <!-- Create/Edit Offer Modal -->
-    <CreateOfferModal
-      :show="showCreateOfferModal || showEditOfferModal"
-      :offer="selectedOffer"
+    <!-- Create Offer Modal -->
+    <SimpleOfferModal
+      v-if="showCreateOfferModal"
       @close="closeOfferModal"
       @success="handleOfferSuccess"
+    />
+
+    <!-- Edit Offer Modal -->
+    <CreateOfferModal
+      v-if="showEditOfferModal"
+      :show="showEditOfferModal"
+      :offer="selectedOffer"
+      @success="handleOfferEditSuccess"
+      @close="closeOfferModal"
     />
   </div>
 </template>
@@ -264,6 +272,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useProductsStore } from '../stores/products'
 import { useOffersStore } from '../stores/offers'
+import SimpleOfferModal from '../components/SimpleOfferModal.vue'
 import CreateOfferModal from '../components/CreateOfferModal.vue'
 
 // Stores
@@ -348,10 +357,14 @@ async function editOffer(offer: any) {
 
 async function toggleOfferStatus(offer: any) {
   try {
+    console.log('Toggling offer:', offer.id, offer)
     await offersStore.toggleOfferStatus(offer.id)
+    console.log('Toggle successful')
+    // Refresh offers to get updated state
+    await offersStore.fetchOffers()
   } catch (error) {
     console.error('Error toggling offer status:', error)
-    alert('Error al cambiar el estado de la oferta')
+    alert('Error al cambiar el estado de la oferta: ' + error.message)
   }
 }
 
@@ -374,17 +387,30 @@ function closeOfferModal() {
 
 async function handleOfferSuccess(offerData: any) {
   try {
-    if (selectedOffer.value) {
-      // Update existing offer
-      await offersStore.updateOffer(selectedOffer.value.id, offerData)
-    } else {
-      // Add new offer
-      await offersStore.createOffer(offerData)
-    }
+    console.log('🎉 Nueva oferta creada exitosamente:', offerData)
+    // Since SimpleOfferModal only creates new offers, we don't need to check for updates
+    await offersStore.fetchOffers() // Refresh the offers list to show the new offer
     closeOfferModal()
   } catch (error) {
     console.error('Error saving offer:', error)
     alert('Error al guardar la oferta')
+  }
+}
+
+async function handleOfferEditSuccess(offerData: any) {
+  try {
+    console.log('🎉 Oferta editada exitosamente:', offerData)
+
+    if (selectedOffer.value && selectedOffer.value.id) {
+      // Update existing offer
+      await offersStore.updateOffer(selectedOffer.value.id, offerData)
+    }
+
+    await offersStore.fetchOffers() // Refresh the offers list
+    closeOfferModal()
+  } catch (error) {
+    console.error('Error updating offer:', error)
+    alert('Error al actualizar la oferta')
   }
 }
 

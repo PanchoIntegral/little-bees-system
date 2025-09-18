@@ -128,11 +128,6 @@
                     <div class="flex-1">
                       <h5 class="font-medium text-gray-900">{{ item.product.name }}</h5>
                       <p class="text-sm text-gray-500">{{ item.product.formatted_price }} c/u</p>
-                      <div v-if="item.appliedOffers && item.appliedOffers.length > 0" class="mt-1">
-                        <p v-for="offer in item.appliedOffers" :key="offer.id" class="text-xs text-green-600 font-medium">
-                          🏷️ {{ offer.name }}
-                        </p>
-                      </div>
                     </div>
                     <button
                       @click="removeFromCart(index)"
@@ -171,9 +166,6 @@
                     </div>
                     <div class="font-semibold text-gray-900">
                       ${{ (item.product.price * item.quantity).toFixed(2) }}
-                      <div v-if="item.discountAmount && item.discountAmount > 0" class="text-xs text-green-600 mt-1">
-                        Descuento: -${{ item.discountAmount.toFixed(2) }}
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -211,9 +203,20 @@
                   <span class="font-medium transition-all duration-300" :class="{ 'text-blue-600 font-bold': subtotalChanged }">${{ subtotal.toFixed(2) }}</span>
                 </div>
 
-                <div v-if="totalOfferDiscount > 0" class="flex justify-between text-sm">
-                  <span class="text-gray-600">Descuentos (Ofertas):</span>
-                  <span class="font-medium text-red-600 transition-all duration-300">-${{ totalOfferDiscount.toFixed(2) }}</span>
+                <div v-if="totalOfferDiscount > 0" class="space-y-2">
+                  <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Descuentos (Ofertas):</span>
+                    <span class="font-medium text-red-600 transition-all duration-300">-${{ totalOfferDiscount.toFixed(2) }}</span>
+                  </div>
+                  <div v-if="appliedSaleOffers.length > 0" class="bg-green-50 p-2 rounded border-l-4 border-green-400">
+                    <div v-for="offer in appliedSaleOffers" :key="offer.id" class="text-xs text-green-700">
+                      <div class="font-medium">🏷️ {{ offer.name }}</div>
+                      <div class="text-gray-600">
+                        {{ offer.discount_type === 'percentage' ? `${offer.discount_value}% de descuento` : `$${offer.discount_value} de descuento` }}
+                        • Compra mínima: ${{ offer.minimum_amount }}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div v-if="taxAmount > 0" class="flex justify-between text-sm">
@@ -275,6 +278,7 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useProductsStore } from '../stores/products'
 import { useSalesStore } from '../stores/sales'
 import { useOffersStore } from '../stores/offers'
+import { offersService } from '../services/offers'
 import type { Product } from '../services/products'
 import type { CreateSaleData } from '../services/sales'
 
@@ -321,10 +325,9 @@ const subtotal = computed(() => {
   return cartItems.value.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
 })
 
-// Calculate total offer discounts applied to all items
-const totalOfferDiscount = computed(() => {
-  return cartItems.value.reduce((sum, item) => sum + (item.discountAmount || 0), 0)
-})
+// Calculate total offer discounts applied to the sale
+const totalOfferDiscount = ref(0)
+const appliedSaleOffers = ref([])
 
 const taxableAmount = computed(() => {
   return Math.max(0, subtotal.value - totalOfferDiscount.value)
@@ -413,23 +416,61 @@ async function updateQuantity(index: number, newQuantity: number) {
   }
 }
 
-// Offer calculation methods
+// Calculate automatic offers based on sale total
+async function calculateSaleOffers() {
+  try {
+    const currentSubtotal = subtotal.value
+    console.log('🔄 Calculating automatic offers for sale total:', currentSubtotal)
+
+    // Get all active offers
+    const activeOffers = await offersService.getActiveDiscounts()
+
+    let bestOffer = null
+    let maxDiscount = 0
+
+    for (const offer of activeOffers) {
+      // Check if sale meets minimum amount
+      if (currentSubtotal >= offer.minimum_amount) {
+        let discount = 0
+
+        if (offer.discount_type === 'percentage') {
+          discount = (currentSubtotal * offer.discount_value) / 100
+        } else if (offer.discount_type === 'fixed_amount') {
+          discount = Math.min(offer.discount_value, currentSubtotal)
+        }
+
+        if (discount > maxDiscount) {
+          maxDiscount = discount
+          bestOffer = offer
+        }
+      }
+    }
+
+    if (bestOffer && maxDiscount > 0) {
+      totalOfferDiscount.value = maxDiscount
+      appliedSaleOffers.value = [bestOffer]
+      console.log('✅ Applied automatic offer:', bestOffer.name, 'Discount:', maxDiscount)
+    } else {
+      totalOfferDiscount.value = 0
+      appliedSaleOffers.value = []
+      console.log('ℹ️ No applicable offers for current total')
+    }
+  } catch (error) {
+    console.error('Error calculating sale offers:', error)
+    totalOfferDiscount.value = 0
+    appliedSaleOffers.value = []
+  }
+}
+
+// Offer calculation methods (simplified for automatic offers)
 async function updateItemOffers(index: number) {
   const item = cartItems.value[index]
-  try {
-    const discountData = await offersStore.calculateProductDiscount(
-      item.product.id,
-      item.quantity,
-      item.product.price
-    )
+  // Remove individual product offers since we now use sale-wide offers
+  item.discountAmount = 0
+  item.appliedOffers = []
 
-    item.discountAmount = discountData.discount_amount
-    item.appliedOffers = discountData.applied_offers
-  } catch (error) {
-    console.error('Error calculating offers for product:', error)
-    item.discountAmount = 0
-    item.appliedOffers = []
-  }
+  // Calculate sale-wide offers instead
+  await calculateSaleOffers()
 }
 
 function triggerSubtotalAnimation() {
@@ -469,18 +510,25 @@ async function processSale() {
       product_id: item.product.id,
       quantity: item.quantity,
       unit_price: item.product.price,
-      discount_amount: item.discountAmount || 0,
-      applied_offers: item.appliedOffers || []
+      applied_offers: [] // No individual product offers anymore
     }));
 
-    // Create sale with nested items
+    // Create sale with nested items and discount information
     const saleData: CreateSaleData = {
       status: 'completed',
       payment_method: paymentMethod.value,
       notes: notes.value || undefined,
       customer_id: customerId,
       anonymous_customer_name: customerName.value.trim() || null,
-      sale_items_attributes: saleItemsAttributes
+      sale_items_attributes: saleItemsAttributes,
+      // Add sale-wide discount information
+      discount_amount: totalOfferDiscount.value,
+      applied_sale_offers: appliedSaleOffers.value.map(offer => ({
+        id: offer.id,
+        name: offer.name,
+        discount_type: offer.discount_type,
+        discount_value: offer.discount_value
+      }))
     }
     
     const sale = await salesStore.createSale(saleData)
@@ -504,9 +552,11 @@ async function processSale() {
 }
 
 // Watchers for visual feedback
-watch(subtotal, () => {
+watch(subtotal, async () => {
   triggerSubtotalAnimation()
   triggerTotalAnimation()
+  // Recalculate offers automatically when subtotal changes
+  await calculateSaleOffers()
 })
 
 watch(totalOfferDiscount, () => {
@@ -532,5 +582,8 @@ onMounted(async () => {
   if (offersStore.offers.length === 0) {
     await offersStore.fetchOffers()
   }
+
+  // Initialize sale offers calculation
+  await calculateSaleOffers()
 })
 </script>

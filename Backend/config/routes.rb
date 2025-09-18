@@ -21,6 +21,16 @@ Rails.application.routes.draw do
 
     # API v1 routes
     namespace :v1 do
+      resources :dashboard_configs do
+        collection do
+          get :current
+          post :reset_default
+          patch :update_widget
+          post :add_widget
+          delete :remove_widget
+        end
+      end
+
       resources :users
       resources :products
       resources :customers
@@ -30,7 +40,7 @@ Rails.application.routes.draw do
 
       resources :sales do
         collection do
-          delete :destroy_all
+          delete :bulk_destroy
         end
         member do
           patch :complete

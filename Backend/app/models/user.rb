@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   # Associations
   has_many :sales, dependent: :destroy
+  has_many :dashboard_configs, dependent: :destroy
 
   # Validations
   validates :email, presence: true, uniqueness: { case_sensitive: false },

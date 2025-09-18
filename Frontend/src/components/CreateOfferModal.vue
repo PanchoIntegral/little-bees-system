@@ -33,12 +33,10 @@
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Oferta *</label>
-              <select v-model="form.type" required class="form-input w-full" @change="onTypeChange">
+              <select v-model="form.discount_type" required class="form-input w-full" @change="onTypeChange">
                 <option value="">Selecciona un tipo</option>
                 <option value="percentage">Descuento Porcentual</option>
-                <option value="fixed">Descuento Fijo</option>
-                <option value="buy_x_get_y">Compra X Lleva Y</option>
-                <option value="bundle">Paquete/Combo</option>
+                <option value="fixed_amount">Descuento Fijo</option>
               </select>
             </div>
           </div>
@@ -52,70 +50,23 @@
             ></textarea>
           </div>
 
-          <!-- Product Selection -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Producto *</label>
-            <div class="relative">
-              <input
-                v-model="productSearch"
-                type="text"
-                class="form-input w-full pl-10"
-                placeholder="Buscar producto..."
-                @input="searchProducts"
-                @focus="showProductDropdown = true"
-              />
-              <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-
-              <!-- Product Dropdown -->
-              <div
-                v-if="showProductDropdown && filteredProducts.length > 0"
-                class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto"
-              >
-                <div
-                  v-for="product in filteredProducts"
-                  :key="product.id"
-                  @click="selectProduct(product)"
-                  class="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                >
-                  <div class="flex justify-between items-center">
-                    <div>
-                      <p class="font-medium text-gray-900">{{ product.name }}</p>
-                      <p class="text-sm text-gray-500">SKU: {{ product.sku }}</p>
-                    </div>
-                    <span class="text-lg font-semibold text-gray-900">{{ product.formatted_price }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Selected Product Display -->
-            <div v-if="form.product" class="mt-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="font-medium text-blue-900">{{ form.product.name }}</p>
-                  <p class="text-sm text-blue-700">{{ form.product.formatted_price }} - Stock: {{ form.product.stock_quantity }}</p>
-                </div>
-                <button
-                  type="button"
-                  @click="removeProduct"
-                  class="text-blue-600 hover:text-blue-800"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                </button>
-              </div>
+          <!-- Product Information -->
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Cómo funcionan las ofertas?</h3>
+            <div class="space-y-2 text-sm text-gray-700">
+              <p>• Las ofertas se aplican <strong>automáticamente</strong> durante las ventas</p>
+              <p>• Se basan en el <strong>monto mínimo</strong> de compra que especifiques abajo</p>
+              <p>• El vendedor podrá seleccionar qué ofertas aplicar a cada producto en la venta</p>
+              <p>• Solo se pueden aplicar ofertas que cumplan el monto mínimo</p>
             </div>
           </div>
 
           <!-- Offer Configuration Based on Type -->
-          <div v-if="form.type" class="bg-gray-50 p-6 rounded-lg">
+          <div v-if="form.discount_type" class="bg-gray-50 p-6 rounded-lg">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Configuración de la Oferta</h3>
 
             <!-- Percentage Discount -->
-            <div v-if="form.type === 'percentage'" class="space-y-4">
+            <div v-if="form.discount_type === 'percentage'" class="space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">Porcentaje de Descuento *</label>
@@ -151,7 +102,7 @@
             </div>
 
             <!-- Fixed Discount -->
-            <div v-if="form.type === 'fixed'" class="space-y-4">
+            <div v-if="form.discount_type === 'fixed_amount'" class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Monto de Descuento *</label>
                 <div class="relative">
@@ -169,96 +120,31 @@
               </div>
             </div>
 
-            <!-- Buy X Get Y -->
-            <div v-if="form.type === 'buy_x_get_y'" class="space-y-4">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad a Comprar *</label>
-                  <input
-                    v-model.number="form.buy_quantity"
-                    type="number"
-                    min="1"
-                    required
-                    class="form-input w-full"
-                    placeholder="2"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad Gratis *</label>
-                  <input
-                    v-model.number="form.get_quantity"
-                    type="number"
-                    min="1"
-                    required
-                    class="form-input w-full"
-                    placeholder="1"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Límite por Cliente</label>
-                  <input
-                    v-model.number="form.limit_per_customer"
-                    type="number"
-                    min="1"
-                    class="form-input w-full"
-                    placeholder="Sin límite"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Bundle -->
-            <div v-if="form.type === 'bundle'" class="space-y-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Precio del Paquete *</label>
-                  <div class="relative">
-                    <input
-                      v-model.number="form.bundle_price"
-                      type="number"
-                      min="0.01"
-                      step="0.01"
-                      required
-                      class="form-input w-full pl-8"
-                      placeholder="25.00"
-                    />
-                    <span class="absolute left-3 top-3 text-gray-500">$</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad en el Paquete *</label>
-                  <input
-                    v-model.number="form.bundle_quantity"
-                    type="number"
-                    min="2"
-                    required
-                    class="form-input w-full"
-                    placeholder="3"
-                  />
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Date Range -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio *</label>
-              <input
-                v-model="form.start_date"
-                type="date"
-                required
-                class="form-input w-full"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin *</label>
-              <input
-                v-model="form.end_date"
-                type="date"
-                required
-                class="form-input w-full"
-              />
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Vigencia del Descuento (Opcional)</h3>
+            <p class="text-sm text-gray-600 mb-4">Si no especificas fechas, el descuento estará activo indefinidamente</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio</label>
+                <input
+                  v-model="form.start_date"
+                  type="date"
+                  class="form-input w-full"
+                />
+                <p class="text-xs text-gray-500 mt-1">Dejar vacío = activo desde ahora</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin</label>
+                <input
+                  v-model="form.end_date"
+                  type="date"
+                  class="form-input w-full"
+                />
+                <p class="text-xs text-gray-500 mt-1">Dejar vacío = sin fecha límite</p>
+              </div>
             </div>
           </div>
 
@@ -268,18 +154,20 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Compra Mínima</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Compra Mínima *</label>
                 <div class="relative">
                   <input
                     v-model.number="form.minimum_purchase"
                     type="number"
                     min="0"
                     step="0.01"
+                    required
                     class="form-input w-full pl-8"
                     placeholder="0.00"
                   />
                   <span class="absolute left-3 top-3 text-gray-500">$</span>
                 </div>
+                <p class="text-xs text-gray-500 mt-1">Monto mínimo de compra para aplicar el descuento</p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Límite de Usos</label>
@@ -316,24 +204,28 @@
           </div>
 
           <!-- Preview -->
-          <div v-if="form.product && form.type" class="bg-green-50 p-6 rounded-lg">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Vista Previa del Descuento</h3>
+          <div v-if="form.discount_type && (form.discount_percentage > 0 || form.discount_amount > 0)" class="bg-green-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Resumen de la Oferta</h3>
             <div class="space-y-2">
               <div class="flex justify-between">
-                <span class="text-gray-700">Producto:</span>
-                <span class="font-medium">{{ form.product.name }}</span>
+                <span class="text-gray-700">Tipo de descuento:</span>
+                <span class="font-medium">{{ form.discount_type === 'percentage' ? 'Porcentual' : 'Monto fijo' }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-700">Precio Original:</span>
-                <span class="font-medium">{{ form.product.formatted_price }}</span>
+                <span class="text-gray-700">Valor del descuento:</span>
+                <span class="font-medium text-red-600">
+                  {{ form.discount_type === 'percentage' ? `${form.discount_percentage}%` : `$${form.discount_amount}` }}
+                </span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-700">Descuento:</span>
-                <span class="font-medium text-red-600">{{ getDiscountPreview() }}</span>
+                <span class="text-gray-700">Compra mínima:</span>
+                <span class="font-medium">${{ form.minimum_purchase || 0 }}</span>
               </div>
-              <div class="flex justify-between text-lg font-bold border-t pt-2">
-                <span class="text-gray-900">Precio Final:</span>
-                <span class="text-green-600">{{ getFinalPricePreview() }}</span>
+              <div v-if="form.start_date || form.end_date" class="flex justify-between">
+                <span class="text-gray-700">Vigencia:</span>
+                <span class="font-medium">
+                  {{ form.start_date || 'Desde ahora' }} - {{ form.end_date || 'Sin límite' }}
+                </span>
               </div>
             </div>
           </div>
@@ -387,26 +279,24 @@ const emit = defineEmits<{
 // Stores
 const productsStore = useProductsStore()
 
-// Form data
+// Form data - Updated to match backend Discount model
 const form = ref({
   name: '',
   description: '',
+  discount_type: '', // Maps to backend field
+  discount_value: 0, // Maps to backend field
+  minimum_amount: 0, // Maps to backend field
+  active: true,      // Maps to backend field
+  starts_at: '',     // Maps to backend field
+  ends_at: '',       // Maps to backend field
+
+  // Legacy fields for UI compatibility
   type: '',
   product: null as Product | null,
   discount_percentage: 0,
   discount_amount: 0,
-  max_discount_amount: 0,
-  buy_quantity: 2,
-  get_quantity: 1,
-  bundle_price: 0,
-  bundle_quantity: 2,
   start_date: '',
-  end_date: '',
-  minimum_purchase: 0,
-  usage_limit: 0,
-  limit_per_customer: 0,
-  stackable: false,
-  status: 'active'
+  end_date: ''
 })
 
 const processing = ref(false)
@@ -419,23 +309,17 @@ const isEditing = computed(() => !!props.offer)
 
 const isFormValid = computed(() => {
   return form.value.name &&
-         form.value.type &&
-         form.value.product &&
-         form.value.start_date &&
-         form.value.end_date &&
+         form.value.discount_type &&
+         form.value.minimum_purchase >= 0 &&
          isOfferConfigValid()
 })
 
 function isOfferConfigValid() {
-  switch (form.value.type) {
+  switch (form.value.discount_type) {
     case 'percentage':
       return form.value.discount_percentage > 0 && form.value.discount_percentage <= 100
-    case 'fixed':
+    case 'fixed_amount':
       return form.value.discount_amount > 0
-    case 'buy_x_get_y':
-      return form.value.buy_quantity > 0 && form.value.get_quantity > 0
-    case 'bundle':
-      return form.value.bundle_price > 0 && form.value.bundle_quantity >= 2
     default:
       return false
   }
@@ -468,7 +352,8 @@ function removeProduct() {
 }
 
 function onTypeChange() {
-  // Reset type-specific fields when type changes
+  // Sync type fields and reset type-specific fields
+  form.value.type = form.value.discount_type
   form.value.discount_percentage = 0
   form.value.discount_amount = 0
   form.value.buy_quantity = 2
@@ -536,16 +421,21 @@ async function handleSubmit() {
   processing.value = true
 
   try {
+    // Map form values to the correct backend fields
     const offerData = {
-      ...form.value,
-      product_id: form.value.product?.id!,
-      product: form.value.product // Include product info for display
+      name: form.value.name,
+      description: form.value.description || '',
+      discount_type: form.value.discount_type,
+      discount_value: form.value.discount_type === 'percentage'
+        ? form.value.discount_percentage
+        : form.value.discount_amount,
+      minimum_amount: form.value.minimum_purchase || 0,
+      starts_at: form.value.start_date || null,
+      ends_at: form.value.end_date || null,
+      active: form.value.status !== 'inactive'
     }
 
-    // Remove the product object from the data being sent (keep product_id)
-    const { product, ...dataForAPI } = offerData
-
-    emit('success', dataForAPI)
+    emit('success', offerData)
   } catch (error) {
     console.error('Error creating/updating offer:', error)
     alert('Error al procesar la oferta. Inténtalo de nuevo.')
@@ -567,6 +457,7 @@ watch(() => props.offer, (newOffer) => {
     Object.assign(form.value, {
       name: '',
       description: '',
+      discount_type: '',
       type: '',
       product: null,
       discount_percentage: 0,

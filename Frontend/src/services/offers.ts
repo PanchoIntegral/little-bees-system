@@ -5,73 +5,32 @@ export interface Offer {
   id: number
   name: string
   description: string
-  type: 'percentage' | 'fixed' | 'buy_x_get_y' | 'bundle'
-  status: 'active' | 'inactive' | 'scheduled' | 'expired'
-  product_id: number
-  product?: Product
-
-  // Percentage discount
-  discount_percentage?: number
-  max_discount_amount?: number
-
-  // Fixed discount
-  discount_amount?: number
-
-  // Buy X Get Y
-  buy_quantity?: number
-  get_quantity?: number
-
-  // Bundle
-  bundle_price?: number
-  bundle_quantity?: number
-
-  // Date range
-  start_date: string
-  end_date: string
-
-  // Conditions
-  minimum_purchase?: number
-  usage_limit?: number
-  limit_per_customer?: number
-  stackable?: boolean
-
-  // Timestamps
+  discount_type: 'percentage' | 'fixed_amount'
+  discount_value: number
+  minimum_amount: number
+  active: boolean
+  starts_at: string | null
+  ends_at: string | null
   created_at: string
   updated_at: string
+  is_valid_now?: boolean
 }
 
 export interface CreateOfferData {
   name: string
   description?: string
-  type: 'percentage' | 'fixed' | 'buy_x_get_y' | 'bundle'
-  product_id: number
-
-  // Type-specific fields
-  discount_percentage?: number
-  max_discount_amount?: number
-  discount_amount?: number
-  buy_quantity?: number
-  get_quantity?: number
-  bundle_price?: number
-  bundle_quantity?: number
-
-  // Date range
-  start_date: string
-  end_date: string
-
-  // Conditions
-  minimum_purchase?: number
-  usage_limit?: number
-  limit_per_customer?: number
-  stackable?: boolean
-  status?: 'active' | 'inactive' | 'scheduled'
+  discount_type: 'percentage' | 'fixed_amount'
+  discount_value: number
+  minimum_amount?: number
+  active?: boolean
+  starts_at?: string
+  ends_at?: string
 }
 
 export interface OfferFilters {
   search?: string
-  type?: string
-  status?: string
-  product_id?: number
+  discount_type?: string
+  active?: boolean
 }
 
 export interface ApplicableOffer {
@@ -87,12 +46,11 @@ class OffersService {
     try {
       const params = new URLSearchParams()
       if (filters?.search) params.append('search', filters.search)
-      if (filters?.type) params.append('type', filters.type)
-      if (filters?.status) params.append('status', filters.status)
-      if (filters?.product_id) params.append('product_id', filters.product_id.toString())
+      if (filters?.discount_type) params.append('discount_type', filters.discount_type)
+      if (filters?.active !== undefined) params.append('active', filters.active.toString())
 
-      const response = await apiService.get(`/offers?${params.toString()}`)
-      return response.data
+      const response = await apiService.get<{discounts: Offer[]}>(`/v1/discounts?${params.toString()}`)
+      return response.discounts || []
     } catch (error) {
       console.error('Error fetching offers:', error)
       throw error
@@ -102,8 +60,8 @@ class OffersService {
   // Get a single offer by ID
   async getOffer(id: number): Promise<Offer> {
     try {
-      const response = await apiService.get(`/offers/${id}`)
-      return response.data
+      const response = await apiService.get<Offer>(`/v1/discounts/${id}`)
+      return response
     } catch (error) {
       console.error('Error fetching offer:', error)
       throw error
@@ -113,8 +71,8 @@ class OffersService {
   // Create a new offer
   async createOffer(data: CreateOfferData): Promise<Offer> {
     try {
-      const response = await apiService.post('/offers', data)
-      return response.data
+      const response = await apiService.post<Offer>('/v1/discounts', { discount: data })
+      return response
     } catch (error) {
       console.error('Error creating offer:', error)
       throw error
@@ -124,8 +82,8 @@ class OffersService {
   // Update an existing offer
   async updateOffer(id: number, data: Partial<CreateOfferData>): Promise<Offer> {
     try {
-      const response = await apiService.put(`/offers/${id}`, data)
-      return response.data
+      const response = await apiService.put<Offer>(`/v1/discounts/${id}`, { discount: data })
+      return response
     } catch (error) {
       console.error('Error updating offer:', error)
       throw error
@@ -135,7 +93,7 @@ class OffersService {
   // Delete an offer
   async deleteOffer(id: number): Promise<void> {
     try {
-      await apiService.delete(`/offers/${id}`)
+      await apiService.delete(`/v1/discounts/${id}`)
     } catch (error) {
       console.error('Error deleting offer:', error)
       throw error
@@ -145,11 +103,33 @@ class OffersService {
   // Get applicable offers for a specific product
   async getApplicableOffers(productId: number, quantity: number = 1): Promise<ApplicableOffer[]> {
     try {
-      const response = await apiService.get(`/offers/applicable/${productId}?quantity=${quantity}`)
-      return response.data
+      // Get all active discounts and filter applicable ones
+      const discounts = await this.getActiveDiscounts()
+      const applicableOffers: ApplicableOffer[] = []
+
+      for (const discount of discounts) {
+        const itemTotal = quantity * 100 // Default price, will be calculated properly in frontend
+        if (itemTotal >= discount.minimum_amount) {
+          let discountAmount = 0
+          if (discount.discount_type === 'percentage') {
+            discountAmount = (itemTotal * discount.discount_value / 100)
+          } else if (discount.discount_type === 'fixed_amount') {
+            discountAmount = Math.min(discount.discount_value, itemTotal)
+          }
+
+          applicableOffers.push({
+            offer: discount,
+            discount_amount: discountAmount,
+            final_price: itemTotal - discountAmount,
+            savings: discountAmount
+          })
+        }
+      }
+
+      return applicableOffers
     } catch (error) {
       console.error('Error fetching applicable offers:', error)
-      throw error
+      return []
     }
   }
 
@@ -161,23 +141,77 @@ class OffersService {
     applied_offers: ApplicableOffer[]
   }> {
     try {
-      const response = await apiService.post('/offers/calculate-discount', {
-        product_id: productId,
-        quantity: quantity,
-        base_price: basePrice
-      })
-      return response.data
+      // Get all active discounts and calculate the best one
+      const discounts = await this.getActiveDiscounts()
+      const itemTotal = quantity * basePrice
+
+      let bestDiscount = null
+      let maxSavings = 0
+
+      for (const discount of discounts) {
+        if (itemTotal >= discount.minimum_amount) {
+          let savings = 0
+          if (discount.discount_type === 'percentage') {
+            savings = (itemTotal * discount.discount_value / 100)
+          } else if (discount.discount_type === 'fixed_amount') {
+            savings = Math.min(discount.discount_value, itemTotal)
+          }
+
+          if (savings > maxSavings) {
+            maxSavings = savings
+            bestDiscount = discount
+          }
+        }
+      }
+
+      return {
+        original_total: itemTotal,
+        discount_amount: maxSavings,
+        final_total: itemTotal - maxSavings,
+        applied_offers: bestDiscount ? [{
+          offer: bestDiscount,
+          discount_amount: maxSavings,
+          final_price: itemTotal - maxSavings,
+          savings: maxSavings
+        }] : []
+      }
     } catch (error) {
       console.error('Error calculating discount:', error)
-      throw error
+      return {
+        original_total: quantity * basePrice,
+        discount_amount: 0,
+        final_total: quantity * basePrice,
+        applied_offers: []
+      }
+    }
+  }
+
+  // Helper method to get active discounts
+  async getActiveDiscounts(): Promise<Offer[]> {
+    try {
+      const response = await apiService.get<{discounts: Offer[]}>('/v1/discounts?active=true')
+      return response.discounts || []
+    } catch (error) {
+      console.error('Error fetching active discounts:', error)
+      return []
     }
   }
 
   // Toggle offer status (active/inactive)
   async toggleOfferStatus(id: number): Promise<Offer> {
     try {
-      const response = await apiService.patch(`/offers/${id}/toggle-status`)
-      return response.data
+      const offer = await this.getOffer(id)
+
+      if (!offer) {
+        throw new Error(`Offer with id ${id} not found`)
+      }
+
+      if (offer.active === undefined) {
+        throw new Error(`Offer ${id} does not have active property: ${JSON.stringify(offer)}`)
+      }
+
+      const updatedOffer = await this.updateOffer(id, { active: !offer.active })
+      return updatedOffer
     } catch (error) {
       console.error('Error toggling offer status:', error)
       throw error
@@ -188,13 +222,19 @@ class OffersService {
   async getOfferStats(): Promise<{
     total_offers: number
     active_offers: number
-    products_with_offers: number
     total_savings: number
     average_discount: number
   }> {
     try {
-      const response = await apiService.get('/offers/stats')
-      return response.data
+      const allOffers = await this.getOffers()
+      const activeOffers = allOffers.filter(offer => offer.active)
+
+      return {
+        total_offers: allOffers.length,
+        active_offers: activeOffers.length,
+        total_savings: 0, // Would need actual sales data to calculate
+        average_discount: activeOffers.reduce((sum, offer) => sum + offer.discount_value, 0) / (activeOffers.length || 1)
+      }
     } catch (error) {
       console.error('Error fetching offer stats:', error)
       throw error
